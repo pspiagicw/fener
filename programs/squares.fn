@@ -1,0 +1,26 @@
+fn sumOfFirstNOddNumbers(n)
+    sum = 0
+    count = 0
+    currentNumber = 1
+
+    while count < n then
+        if currentNumber % 2 != 0 then
+            sum = sum + currentNumber
+            count = count + 1
+        end
+        currentNumber = currentNumber + 1
+    end
+
+    return sum
+end
+
+test sumOfFirstNOddNumbers
+    expected = 25  ;; Sum of first 5 odd numbers: 1 + 3 + 5 + 7 + 9 = 25
+    result = sumOfFirstNOddNumbers(5)
+    assert(result, expected, "Incorrect sum of first 5 odd numbers")
+
+    expected = 9^2  ;; Sum of first 9 odd numbers: 1 + 3 + ... + 17 + 19 = 81
+    result = sumOfFirstNOddNumbers(9)
+    assert(result, expected, "Incorrect sum of first 9 odd numbers")
+end
+

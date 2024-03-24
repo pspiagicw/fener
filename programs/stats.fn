@@ -1,0 +1,58 @@
+fn findMax(numbers)
+    max = numbers[1]
+    i = 2
+    len = len(numbers)
+    while i <= len do
+        if numbers[i] > max then
+            max = numbers[i]
+        end
+        i = i + 1
+    end
+    return max
+end
+
+fn findMin(numbers)
+    min = numbers[1]
+    i = 2
+    len = len(numbers)
+    while i <= len do
+        if numbers[i] < min then
+            min = numbers[i]
+        end
+        i = i + 1
+    end
+    return min
+end
+
+fn calculateAverage(numbers)
+    sum = 0
+    i = 1
+    len = len(numbers)
+    while i <= len do
+        sum = sum + numbers[i]
+        i = i + 1
+    end
+    return sum / len
+end
+
+test findMax
+    ;; Test case for findMax function
+    expected = 10
+    result = findMax([1, 5, 10, 8, 3])
+    assert(result, expected, "Incorrect maximum value")
+end
+
+test findMin
+    ;; Test case for findMin function
+    expected = 1
+    result = findMin([1, 5, 10, 8, 3])
+    assert(result, expected, "Incorrect minimum value")
+end
+
+test calculateAverage
+    ;; Test case for calculateAverage function
+    expected = 5.4
+    result = calculateAverage([1, 5, 10, 8, 3])
+    assert(result, expected, "Incorrect average value")
+end
+

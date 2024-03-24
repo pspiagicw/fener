@@ -1,0 +1,30 @@
+fn gcd(a, b)
+    while b != 0 then
+        temp = b
+        b = a % b
+        a = temp
+    end
+    return a
+end
+
+fn areCoprime(a, b)
+    return gcd(a, b) == 1
+end
+
+test areCoprime
+    ;; Test case 1: 8 and 9 are coprime
+    expected = true
+    result = areCoprime(8, 9)
+    assert(result, expected, "Incorrect result for 8 and 9")
+
+    ;; Test case 2: 15 and 25 are not coprime
+    expected = false
+    result = areCoprime(15, 25)
+    assert(result, expected, "Incorrect result for 15 and 25")
+
+    ;; Test case 3: 21 and 28 are not coprime
+    expected = false
+    result = areCoprime(21, 28)
+    assert(result, expected, "Incorrect result for 21 and 28")
+end
+

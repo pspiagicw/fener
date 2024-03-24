@@ -1,0 +1,17 @@
+fn printFloydsTriangle(n)
+    number = 1
+    for i = 1 to n do
+        for j = 1 to i do
+            print(number)
+            number = number + 1
+        end
+        print("\n")
+    end
+end
+
+test printFloydsTriangle
+    expectedOutput = "1\n2 3\n4 5 6\n"
+    capturedOutput = capture(printFloydsTriangle(3))
+    assert(capturedOutput, expectedOutput, "Incorrect output for Floyd's triangle")
+end
+

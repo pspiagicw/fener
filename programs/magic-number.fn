@@ -1,0 +1,22 @@
+fn isMagicNumber(n)
+    sum = 0
+    while n > 0 then
+        digit = n % 10
+        sum = sum + digit
+        n = n / 10
+    end
+    return sum == 1
+end
+
+test isMagicNumber
+    ;; Test case 1: 19 is a magic number
+    expected = true
+    result = isMagicNumber(19)
+    assert(result, expected, "Incorrect result for 19")
+
+    ;; Test case 2: 123 is not a magic number
+    expected = false
+    result = isMagicNumber(123)
+    assert(result, expected, "Incorrect result for 123")
+end
+

@@ -1,0 +1,11 @@
+fn calculateDiscriminant(a, b, c)
+    discriminant = b * b - 4 * a * c
+    return discriminant
+end
+
+test calculateDiscriminant
+    expected = 1
+    result = calculateDiscriminant(1, -3, 2)
+    assert(result, expected, "Incorrect discriminant for quadratic equation")
+end
+

@@ -1,0 +1,27 @@
+fn checkOrder(a, b, c)
+    if a > b and b > c then
+        return "Decreasing"
+    elseif a < b and b < c then
+        return "Increasing"
+    else
+        return "Neither increasing nor decreasing"
+    end
+end
+
+test checkOrder
+    ;; Test case 1: Increasing order
+    expected = "Increasing"
+    result = checkOrder(1, 2, 3)
+    assert(result, expected, "Incorrect order for 1, 2, 3")
+
+    ;; Test case 2: Decreasing order
+    expected = "Decreasing"
+    result = checkOrder(3, 2, 1)
+    assert(result, expected, "Incorrect order for 3, 2, 1")
+
+    ;; Test case 3: Neither increasing nor decreasing
+    expected = "Neither increasing nor decreasing"
+    result = checkOrder(2, 3, 1)
+    assert(result, expected, "Incorrect order for 2, 3, 1")
+end
+

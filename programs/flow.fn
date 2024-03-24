@@ -7,11 +7,11 @@ if number == 1 then
 	print("Always true")
 else
 	print("Shouldn't execute")
-then
+end
 
 if number == 2 then
 	print("Number is 2")
-then
+else
 	print("Number is not 2")
 end
 

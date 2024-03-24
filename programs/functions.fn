@@ -23,6 +23,6 @@ end
 
 ;; first class functions
 
-value = arithmetic(fn(x,y) { return x + y }, 2, 5)
+value = arithmetic(fn(x,y) return x + y end,2, 5)
 
 print(value)
