@@ -25,6 +25,9 @@ func main() {
 		t := l.Next()
 
 		for t.Type != "EOF" {
+			if l.Error() != nil {
+				goreland.LogError("Error: %v", l.Error())
+			}
 			fmt.Println(t)
 			t = l.Next()
 		}

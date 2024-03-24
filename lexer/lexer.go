@@ -1,8 +1,9 @@
 package lexer
 
 import (
+	"fmt"
+
 	"github.com/pspiagicw/fener/token"
-	"github.com/pspiagicw/goreland"
 )
 
 type Lexer struct {
@@ -12,6 +13,7 @@ type Lexer struct {
 	ch           string // current char under examination
 	eof          bool   // signals end of file
 	line         int    // current line number
+	err          error  // errors encountered during lexing
 }
 
 func NewLexer(input string) *Lexer {
@@ -19,8 +21,12 @@ func NewLexer(input string) *Lexer {
 		input:        input,
 		position:     -1,
 		readPosition: 0,
+		err:          nil,
 	}
 	return l
+}
+func (l *Lexer) token(ttype token.TokenType, value string) *token.Token {
+	return &token.Token{Type: ttype, Value: value, Line: l.line}
 }
 
 func (l *Lexer) advance() {
@@ -64,40 +70,47 @@ func (l *Lexer) string() string {
 	}
 
 	if l.eof {
-		goreland.LogFatal("Unterminated string at line %d", l.line)
+		l.error("Unterminated string at line %d", l.line)
+		return ""
 	}
 
 	l.advance()
 
 	return l.input[position:l.position]
 }
+func (l *Lexer) error(format string, args ...interface{}) {
+	l.err = fmt.Errorf(format, args...)
+}
+func (l *Lexer) Error() error {
+	return l.err
+}
 
 func (l *Lexer) keyword(ident string) *token.Token {
 	switch ident {
 	case "if":
-		return &token.Token{Type: token.IF, Value: "if"}
+		return l.token(token.IF, "if")
 	case "else":
-		return &token.Token{Type: token.ELSE, Value: "else"}
+		return l.token(token.ELSE, "else")
 	case "while":
-		return &token.Token{Type: token.WHILE, Value: "while"}
+		return l.token(token.WHILE, "while")
 	case "false":
-		return &token.Token{Type: token.FALSE, Value: "false"}
+		return l.token(token.FALSE, "false")
 	case "true":
-		return &token.Token{Type: token.TRUE, Value: "true"}
+		return l.token(token.TRUE, "true")
 	case "fn":
-		return &token.Token{Type: token.FUNCTION, Value: "fn"}
+		return l.token(token.FUNCTION, "fn")
 	case "return":
-		return &token.Token{Type: token.RETURN, Value: "return"}
+		return l.token(token.RETURN, "return")
 	case "end":
-		return &token.Token{Type: token.END, Value: "end"}
+		return l.token(token.END, "end")
 	case "and":
-		return &token.Token{Type: token.AND, Value: "and"}
+		return l.token(token.AND, "and")
 	case "or":
-		return &token.Token{Type: token.OR, Value: "or"}
+		return l.token(token.OR, "or")
 	case "not":
-		return &token.Token{Type: token.NOT, Value: "not"}
+		return l.token(token.NOT, "not")
 	default:
-		return &token.Token{Type: token.IDENT, Value: ident}
+		return l.token(token.IDENT, ident)
 	}
 }
 
@@ -124,6 +137,7 @@ func (l *Lexer) comment() string {
 		comment += l.ch
 		l.advance()
 	}
+	comment += l.ch
 
 	return comment
 }
@@ -133,70 +147,70 @@ func (l *Lexer) Next() *token.Token {
 	l.whitespace()
 
 	if l.eof {
-		return &token.Token{Type: token.EOF, Value: ""}
+		return l.token(token.EOF, "")
 	}
 
 	switch l.ch {
 	case ".":
-		return &token.Token{Type: token.DOT, Value: "."}
+		return l.token(token.DOT, ".")
 	case "(":
-		return &token.Token{Type: token.LPAREN, Value: "("}
+		return l.token(token.LPAREN, "(")
 	case ")":
-		return &token.Token{Type: token.RPAREN, Value: ")"}
+		return l.token(token.RPAREN, ")")
 	case "+":
-		return &token.Token{Type: token.PLUS, Value: "+"}
+		return l.token(token.PLUS, "+")
 	case "-":
 		if isDigit(l.peek()) {
 			value := l.number()
-			return &token.Token{Type: token.INT, Value: value}
+			return l.token(token.INT, value)
 		}
-		return &token.Token{Type: token.MINUS, Value: "-"}
+		return l.token(token.MINUS, "-")
 	case "*":
-		return &token.Token{Type: token.MULTIPLY, Value: "*"}
+		return l.token(token.MULTIPLY, "*")
 	case "/":
-		return &token.Token{Type: token.DIVIDE, Value: "/"}
+		return l.token(token.DIVIDE, "/")
 	case "%":
-		return &token.Token{Type: token.MOD, Value: "%"}
+		return l.token(token.MOD, "%")
 	case ";":
 		if l.peek() == ";" {
 			l.advance()
 			comment := l.comment()
-			return &token.Token{Type: token.COMMENT, Value: comment}
+			return l.token(token.COMMENT, comment)
 		}
-		return &token.Token{Type: token.ILLEGAL, Value: l.ch}
+		return l.token(token.ILLEGAL, l.ch)
 	case "<":
 		if l.peek() == "=" {
 			l.advance()
-			return &token.Token{Type: token.LTE, Value: "<="}
+			return l.token(token.LTE, "<=")
 		}
-		return &token.Token{Type: token.LT, Value: "<"}
+		return l.token(token.LT, "<")
 	case ">":
 		if l.peek() == "=" {
 			l.advance()
-			return &token.Token{Type: token.GTE, Value: ">="}
+			return l.token(token.GTE, ">=")
 		}
-		return &token.Token{Type: token.GT, Value: ">"}
+		return l.token(token.GT, ">")
 	case "=":
 		if l.peek() == "=" {
 			l.advance()
-			return &token.Token{Type: token.EQ, Value: "=="}
+			return l.token(token.EQ, "==")
 		}
-		return &token.Token{Type: token.ASSIGN, Value: "="}
+		return l.token(token.ASSIGN, "=")
 	case "!":
 		if l.peek() == "=" {
 			l.advance()
-			return &token.Token{Type: token.NOT_EQ, Value: "!="}
+			return l.token(token.NOT_EQ, "!=")
 		}
-		return &token.Token{Type: token.BANG, Value: "!"}
+		return l.token(token.BANG, "!")
 	case `"`:
-		return &token.Token{Type: token.STRING, Value: l.string()}
+		return l.token(token.STRING, l.string())
 	default:
 		if isLetter(l.ch) {
 			identifier := l.identifier()
 			return l.keyword(identifier)
 		} else if isDigit(l.ch) {
-			return &token.Token{Type: token.INT, Value: l.number()}
+			return l.token(token.INT, l.number())
 		}
 	}
-	return &token.Token{Type: token.ILLEGAL, Value: l.ch}
+	return l.token(token.ILLEGAL, l.ch)
 }

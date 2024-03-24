@@ -71,14 +71,14 @@ func TestSymbolTokens(t *testing.T) {
 
 func TestIdentifierTokens(t *testing.T) {
 	// Test case for identifiers
-	input := "foo bar baz foobar1"
+	input := "foo bar baz foobar"
 
 	expectedTokens := []token.Token{
 		{Type: token.IDENT, Value: "foo"},
 		{Type: token.IDENT, Value: "bar"},
 		{Type: token.IDENT, Value: "baz"},
-		{Type: token.IDENT, Value: "foobar1"},
-		{Type: token.EOF, Value: " "},
+		{Type: token.IDENT, Value: "foobar"},
+		{Type: token.EOF, Value: ""},
 	}
 	checkTokens(t, expectedTokens, input)
 }

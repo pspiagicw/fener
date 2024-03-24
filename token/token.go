@@ -7,6 +7,7 @@ type TokenType string
 type Token struct {
 	Type  TokenType
 	Value string
+	Line  int
 }
 
 func (t Token) String() string {
