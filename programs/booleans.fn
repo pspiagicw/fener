@@ -1,0 +1,17 @@
+print(true && false)
+print(true && true)
+print(false && false)
+print(false && true)
+
+print(true || false)
+print(true || true)
+print(false || false)
+print(false || true)
+
+print(2 < 1)
+print(2 <= 1)
+print(2 > 1)
+print(2 >= 1)
+
+print(2 == 1)
+print(2 != 1)

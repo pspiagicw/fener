@@ -1,0 +1,25 @@
+class className
+    fn init(name, some)
+        self.name = name
+        self.some = some
+    end
+
+    fn giveName() 
+        return self.name
+    end
+    fn setName(name)
+        self.name = name
+    end
+end
+
+
+var = className("pspiagicw", 1)
+
+print(var.giveName())
+
+;; You can only have class methods, no attributes.
+;; Meaning, you can't do this
+
+var.name = "something else"
+
+;; Declare a setter or some other method for that

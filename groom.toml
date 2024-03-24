@@ -1,0 +1,19 @@
+name = "fener"
+
+[variables]
+version = "0.0.1"
+
+[task.build]
+description = "Build the project."
+command = "go build ."
+
+
+[task.test]
+command = "go test ./lexer"
+depends = [
+    "format"
+]
+
+[task.format]
+command = "go fmt ./..."
+

@@ -1,0 +1,18 @@
+fn fuzzbuzz(n)
+    if n % 5 == 0 && n % 3 == 0 then
+        print("FizzBuzz")
+    elif n % 3 == 0 then
+        print("Fizz")
+    elif n % 5 == 0 then
+        print("Buzz")
+    else
+        print(n)
+    end
+end
+
+a = 5
+
+while a > 0 then
+    fizzbuzz(a)
+    a = a + 1
+end

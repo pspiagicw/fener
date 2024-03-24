@@ -1,0 +1,28 @@
+fn function1()
+    print("this is a function")
+end
+
+
+fn add(x,y)
+    return x + y
+end
+
+fn greet(name)
+   print("Hello, %s", name)
+end
+
+;; Lambdas 
+
+greet = fn(name)
+    print("Hello, %s", name)
+end
+
+fn arithmetic(operation, x, y)
+    return operation(x,y)
+end
+
+;; first class functions
+
+value = arithmetic(fn(x,y) { return x + y }, 2, 5)
+
+print(value)

@@ -1,0 +1,14 @@
+a = 1
+name = "pspiagicwe
+status = false
+
+print(a)
+print(name)
+print(status)
+
+const name = "pspiagicw"
+
+print(a)
+
+;; should give an error
+name = "something else"
