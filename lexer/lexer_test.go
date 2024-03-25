@@ -8,7 +8,8 @@ func TestTokenIntegers(t *testing.T) {
 
 	expectedTokens := []token.Token{
 		{Type: token.INT, Value: "123"},
-		{Type: token.INT, Value: "-456"},
+		{Type: token.MINUS, Value: "-"},
+		{Type: token.INT, Value: "456"},
 		{Type: token.INT, Value: "789"},
 		{Type: token.EOF, Value: ""},
 	}
@@ -85,7 +86,7 @@ func TestIdentifierTokens(t *testing.T) {
 
 func TestKeywordTokens(t *testing.T) {
 	// Test case for keywords
-	input := "if else while false true return fn end and or not"
+	input := "if else while false true return fn end and or not then"
 
 	expectedTokens := []token.Token{
 		{Type: token.IF, Value: "if"},
@@ -99,6 +100,7 @@ func TestKeywordTokens(t *testing.T) {
 		{Type: token.AND, Value: "and"},
 		{Type: token.OR, Value: "or"},
 		{Type: token.NOT, Value: "not"},
+		{Type: token.THEN, Value: "then"},
 		{Type: token.EOF, Value: ""},
 	}
 	checkTokens(t, expectedTokens, input)
@@ -153,5 +155,59 @@ func matchToken(t *testing.T, i int, expected token.Token, actual *token.Token) 
 	if actual.Value != expected.Value {
 		t.Errorf("Test [%d], Expected Value: '%v', Actual TokenValue: '%v'", i, expected.Value, actual.Value)
 	}
+
+}
+
+func TestLexerTokenization(t *testing.T) {
+	input := `
+        fn factorial(n)
+            if n <= 1 then
+                return 1
+            end
+            
+            return n * factorial(n-1)
+        end
+
+        result = factorial(5)
+        print(result)
+    `
+
+	expectedTokens := []token.Token{
+		{Type: token.FUNCTION, Value: "fn"},
+		{Type: token.IDENT, Value: "factorial"},
+		{Type: token.LPAREN, Value: "("},
+		{Type: token.IDENT, Value: "n"},
+		{Type: token.RPAREN, Value: ")"},
+		{Type: token.IF, Value: "if"},
+		{Type: token.IDENT, Value: "n"},
+		{Type: token.LTE, Value: "<="},
+		{Type: token.INT, Value: "1"},
+		{Type: token.THEN, Value: "then"},
+		{Type: token.RETURN, Value: "return"},
+		{Type: token.INT, Value: "1"},
+		{Type: token.END, Value: "end"},
+		{Type: token.RETURN, Value: "return"},
+		{Type: token.IDENT, Value: "n"},
+		{Type: token.MULTIPLY, Value: "*"},
+		{Type: token.IDENT, Value: "factorial"},
+		{Type: token.LPAREN, Value: "("},
+		{Type: token.IDENT, Value: "n"},
+		{Type: token.MINUS, Value: "-"},
+		{Type: token.INT, Value: "1"},
+		{Type: token.RPAREN, Value: ")"},
+		{Type: token.END, Value: "end"},
+		{Type: token.IDENT, Value: "result"},
+		{Type: token.ASSIGN, Value: "="},
+		{Type: token.IDENT, Value: "factorial"},
+		{Type: token.LPAREN, Value: "("},
+		{Type: token.INT, Value: "5"},
+		{Type: token.RPAREN, Value: ")"},
+		{Type: token.IDENT, Value: "print"},
+		{Type: token.LPAREN, Value: "("},
+		{Type: token.IDENT, Value: "result"},
+		{Type: token.RPAREN, Value: ")"},
+	}
+
+	checkTokens(t, expectedTokens, input)
 
 }

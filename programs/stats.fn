@@ -2,7 +2,7 @@ fn findMax(numbers)
     max = numbers[1]
     i = 2
     len = len(numbers)
-    while i <= len do
+    while i <= len then
         if numbers[i] > max then
             max = numbers[i]
         end
@@ -15,7 +15,7 @@ fn findMin(numbers)
     min = numbers[1]
     i = 2
     len = len(numbers)
-    while i <= len do
+    while i <= len then
         if numbers[i] < min then
             min = numbers[i]
         end
@@ -28,7 +28,7 @@ fn calculateAverage(numbers)
     sum = 0
     i = 1
     len = len(numbers)
-    while i <= len do
+    while i <= len then
         sum = sum + numbers[i]
         i = i + 1
     end

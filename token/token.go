@@ -53,6 +53,7 @@ const (
 	FUNCTION = "FUNCTION"
 	RETURN   = "RETURN"
 	END      = "END"
+	THEN     = "THEN"
 
 	AND = "AND"
 	OR  = "OR"

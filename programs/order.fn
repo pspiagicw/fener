@@ -1,7 +1,7 @@
 fn checkOrder(a, b, c)
-    if a > b and b > c then
+    if a > b && b > c then
         return "Decreasing"
-    elseif a < b and b < c then
+    elif a < b && b < c then
         return "Increasing"
     else
         return "Neither increasing nor decreasing"

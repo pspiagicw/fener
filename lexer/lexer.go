@@ -109,6 +109,8 @@ func (l *Lexer) keyword(ident string) *token.Token {
 		return l.token(token.OR, "or")
 	case "not":
 		return l.token(token.NOT, "not")
+	case "then":
+		return l.token(token.THEN, "then")
 	default:
 		return l.token(token.IDENT, ident)
 	}
@@ -160,10 +162,6 @@ func (l *Lexer) Next() *token.Token {
 	case "+":
 		return l.token(token.PLUS, "+")
 	case "-":
-		if isDigit(l.peek()) {
-			value := l.number()
-			return l.token(token.INT, value)
-		}
 		return l.token(token.MINUS, "-")
 	case "*":
 		return l.token(token.MULTIPLY, "*")
