@@ -168,6 +168,7 @@ func TestLexerTokenization(t *testing.T) {
             return n * factorial(n-1)
         end
 
+        ;; print the result
         result = factorial(5)
         print(result)
     `
