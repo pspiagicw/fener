@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/pspiagicw/fener/ast"
+	"github.com/pspiagicw/fener/token"
 )
 
 func (p *Parser) parseInteger() ast.Expression {
@@ -29,4 +30,13 @@ func (p *Parser) parseString() ast.Expression {
 	p.advance()
 
 	return s
+}
+func (p *Parser) parseBoolean() ast.Expression {
+	b := &ast.Boolean{Token: p.curToken}
+
+	b.Value = p.curTokenIs(token.TRUE)
+
+	p.advance()
+
+	return b
 }

@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/pspiagicw/fener/lexer"
 	"github.com/pspiagicw/fener/parser"
 	"github.com/pspiagicw/goreland"
+	"github.com/sanity-io/litter"
 )
 
 func main() {
@@ -32,10 +32,7 @@ func main() {
 			fmt.Println(err)
 		}
 
-		spew.Config.DisablePointerAddresses = true
-		spew.Config.Indent = "\t"
-
-		spew.Printf("%#v\n", program)
+		fmt.Println(litter.Sdump(program))
 
 	}
 }

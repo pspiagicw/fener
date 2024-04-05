@@ -6,7 +6,48 @@ import (
 	"github.com/davecgh/go-spew/spew"
 	"github.com/pspiagicw/fener/ast"
 	"github.com/pspiagicw/fener/lexer"
+	"github.com/pspiagicw/fener/token"
 )
+
+func TestParserIntegerExpression(t *testing.T) {
+	input := `
+    123
+    456
+    `
+
+	expectedTree := []ast.Statement{
+		&ast.ExpressionStatement{
+			Token:      &token.Token{Type: token.INT, Value: "123", Line: 1},
+			Expression: &ast.Integer{Value: 123, Token: &token.Token{Type: token.INT, Value: "123", Line: 1}},
+		},
+		&ast.ExpressionStatement{
+			Token:      &token.Token{Type: token.INT, Value: "456", Line: 2},
+			Expression: &ast.Integer{Value: 456, Token: &token.Token{Type: token.INT, Value: "456", Line: 2}},
+		},
+	}
+
+	checkTree(t, input, expectedTree)
+}
+
+func TestParserStringExpression(t *testing.T) {
+	input := `
+    "Hello"
+    "World"
+    `
+
+	expectedTree := []ast.Statement{
+		&ast.ExpressionStatement{
+			Token:      &token.Token{Type: token.STRING, Value: "Hello", Line: 1},
+			Expression: &ast.String{Value: "Hello", Token: &token.Token{Type: token.STRING, Value: "Hello", Line: 1}},
+		},
+		&ast.ExpressionStatement{
+			Token:      &token.Token{Type: token.STRING, Value: "World", Line: 2},
+			Expression: &ast.String{Value: "World", Token: &token.Token{Type: token.STRING, Value: "World", Line: 2}},
+		},
+	}
+
+	checkTree(t, input, expectedTree)
+}
 
 func TestParserInt(t *testing.T) {
 	input := `
@@ -16,10 +57,12 @@ func TestParserInt(t *testing.T) {
 
 	expectedTree := []ast.Statement{
 		&ast.ReturnStatement{
-			Value: &ast.Integer{Value: 123},
+			Token: &token.Token{Type: token.RETURN, Value: "return", Line: 1},
+			Value: &ast.Integer{Value: 123, Token: &token.Token{Type: token.INT, Value: "123", Line: 1}},
 		},
 		&ast.ReturnStatement{
-			Value: &ast.Integer{Value: 456},
+			Token: &token.Token{Type: token.RETURN, Value: "return", Line: 2},
+			Value: &ast.Integer{Value: 456, Token: &token.Token{Type: token.INT, Value: "456", Line: 2}},
 		},
 	}
 
@@ -34,34 +77,38 @@ func TestParserString(t *testing.T) {
 
 	expectedTree := []ast.Statement{
 		&ast.ReturnStatement{
-			Value: &ast.String{Value: "Hello"},
+			Token: &token.Token{Type: token.RETURN, Value: "return", Line: 1},
+			Value: &ast.String{Value: "Hello", Token: &token.Token{Type: token.STRING, Value: "Hello", Line: 1}},
 		},
 		&ast.ReturnStatement{
-			Value: &ast.String{Value: "World"},
+			Token: &token.Token{Type: token.RETURN, Value: "return", Line: 2},
+			Value: &ast.String{Value: "World", Token: &token.Token{Type: token.STRING, Value: "World", Line: 2}},
 		},
 	}
 
 	checkTree(t, input, expectedTree)
 }
 
-//
-// func TestParserBoolean(t *testing.T) {
-// 	input := `
-//     true
-//     false
-//     `
-//
-// 	expectedTree := []ast.Statement{
-// 		&ast.BoolExpression{
-// 			Value: true,
-// 		},
-// 		&ast.BoolExpression{
-// 			Value: false,
-// 		},
-// 	}
-//
-// 	checkTree(t, input, expectedTree)
-// }
+func TestParserBoolean(t *testing.T) {
+	input := `
+    return true
+    return false
+    `
+
+	expectedTree := []ast.Statement{
+		&ast.ReturnStatement{
+			Token: &token.Token{Type: token.RETURN, Value: "return", Line: 1},
+			Value: &ast.Boolean{Value: true, Token: &token.Token{Type: token.TRUE, Value: "true", Line: 1}},
+		},
+		&ast.ReturnStatement{
+			Token: &token.Token{Type: token.RETURN, Value: "return", Line: 2},
+			Value: &ast.Boolean{Value: false, Token: &token.Token{Type: token.FALSE, Value: "false", Line: 2}},
+		},
+	}
+
+	checkTree(t, input, expectedTree)
+}
+
 // func TestParserIdentifierExpressionOnly(t *testing.T) {
 // 	input := `identifier`
 //

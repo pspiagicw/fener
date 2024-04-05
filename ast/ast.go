@@ -66,3 +66,26 @@ type String struct {
 func (s *String) Name() string    { return "String" }
 func (s *String) expressionNode() {}
 func (s *String) String() string  { return fmt.Sprintf("String(%s)", s.Value) }
+
+type ExpressionStatement struct {
+	Expression Expression
+	Token      *token.Token
+}
+
+func (es *ExpressionStatement) Name() string   { return "ExpressionStatement" }
+func (es *ExpressionStatement) statementNode() {}
+func (es *ExpressionStatement) String() string {
+	if es.Expression != nil {
+		return es.Expression.String()
+	}
+	return ""
+}
+
+type Boolean struct {
+	Token *token.Token
+	Value bool
+}
+
+func (b *Boolean) Name() string    { return "Boolean" }
+func (b *Boolean) expressionNode() {}
+func (b *Boolean) String() string  { return fmt.Sprintf("Boolean(%t)", b.Value) }

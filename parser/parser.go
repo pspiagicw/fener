@@ -41,6 +41,8 @@ func New(l *lexer.Lexer) *Parser {
 
 	p.registerPrefix(token.INT, p.parseInteger)
 	p.registerPrefix(token.STRING, p.parseString)
+	p.registerPrefix(token.TRUE, p.parseBoolean)
+	p.registerPrefix(token.FALSE, p.parseBoolean)
 
 	p.advance()
 	p.advance()
@@ -70,11 +72,15 @@ func (p *Parser) parseStatement() ast.Statement {
 	case token.RETURN:
 		return p.parseReturnStatement()
 	default:
-		p.errors = append(p.errors, fmt.Sprintf("unknown token type %s", p.curToken.Type))
-		p.advance()
+		return p.parseExpressionStatement()
 	}
+}
+func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
+	stmt := &ast.ExpressionStatement{Token: p.curToken}
 
-	return nil
+	stmt.Expression = p.parseExpression(LOWEST)
+
+	return stmt
 }
 func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
 	stmt := &ast.ReturnStatement{Token: p.curToken}
@@ -118,6 +124,9 @@ func (p *Parser) parseExpression(precedence int) ast.Expression {
 }
 func (p *Parser) peektokenIs(t token.TokenType) bool {
 	return p.peekToken.Type == t
+}
+func (p *Parser) curTokenIs(t token.TokenType) bool {
+	return p.curToken.Type == t
 }
 func (p *Parser) peekPrecedence() int {
 	if p, ok := precedences[p.peekToken.Type]; ok {

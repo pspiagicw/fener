@@ -3,8 +3,9 @@ module github.com/pspiagicw/fener
 go 1.21.4
 
 require (
-	github.com/davecgh/go-spew v1.1.1
+	github.com/davecgh/go-spew v0.0.0-20161028175848-04cdfd42973b
 	github.com/pspiagicw/goreland v0.0.0-20231129143657-4b9ff8ac7ad5
+	github.com/sanity-io/litter v1.5.5
 )
 
 require (
