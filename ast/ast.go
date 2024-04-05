@@ -89,3 +89,15 @@ type Boolean struct {
 func (b *Boolean) Name() string    { return "Boolean" }
 func (b *Boolean) expressionNode() {}
 func (b *Boolean) String() string  { return fmt.Sprintf("Boolean(%t)", b.Value) }
+
+type InfixExpression struct {
+	Left     Expression
+	Operator token.TokenType
+	Right    Expression
+}
+
+func (ie *InfixExpression) Name() string    { return "InfixExpression" }
+func (ie *InfixExpression) expressionNode() {}
+func (ie *InfixExpression) String() string {
+	return fmt.Sprintf("(%s %s %s)", ie.Left.String(), ie.Operator, ie.Right.String())
+}

@@ -9,11 +9,20 @@ import (
 )
 
 const (
-	LOWEST = iota
+	_ = iota
+	LOWEST
 	ADDITION
+	MULTIPLY
+	MOD
 )
 
-var precedences = map[token.TokenType]int{}
+var precedences = map[token.TokenType]int{
+	token.PLUS:     ADDITION,
+	token.MINUS:    ADDITION,
+	token.MULTIPLY: MULTIPLY,
+	token.DIVIDE:   MULTIPLY,
+	token.MOD:      MOD,
+}
 
 type infixParseFn func(ast.Expression) ast.Expression
 type prefixParseFn func() ast.Expression
@@ -44,14 +53,24 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerPrefix(token.TRUE, p.parseBoolean)
 	p.registerPrefix(token.FALSE, p.parseBoolean)
 
+	p.registerInfix(token.PLUS, p.parseInfixExpression)
+	p.registerInfix(token.MINUS, p.parseInfixExpression)
+	p.registerInfix(token.MULTIPLY, p.parseInfixExpression)
+	p.registerInfix(token.DIVIDE, p.parseInfixExpression)
+	p.registerInfix(token.MOD, p.parseInfixExpression)
+
 	p.advance()
 	p.advance()
 
 	return p
 
 }
+
 func (p *Parser) registerPrefix(t token.TokenType, fn prefixParseFn) {
 	p.prefixParseFns[t] = fn
+}
+func (p *Parser) registerInfix(t token.TokenType, fn infixParseFn) {
+	p.infixParseFns[t] = fn
 }
 
 func (p *Parser) Parse() *ast.Program {
@@ -106,16 +125,16 @@ func (p *Parser) parseExpression(precedence int) ast.Expression {
 		return nil
 	}
 
+	// This consumes the current token and advances to the next one
 	leftExp := prefix()
+	// So we compare the precedence of the current token.
 
-	if !p.peektokenIs(token.EOF) && precedence < p.peekPrecedence() {
-		infix := p.infixParseFns[p.peekToken.Type]
+	for !p.curTokenIs(token.EOF) && precedence < p.curPrecedence() {
+		infix := p.infixParseFns[p.curToken.Type]
 
 		if infix == nil {
 			return leftExp
 		}
-
-		p.advance()
 
 		leftExp = infix(leftExp)
 	}
@@ -138,4 +157,11 @@ func (p *Parser) peekPrecedence() int {
 func (p *Parser) noPrefixParseFnError(t token.TokenType) {
 	msg := fmt.Sprintf("no prefix parse function for %s found", t)
 	p.errors = append(p.errors, msg)
+}
+func (p *Parser) curPrecedence() int {
+	if p, ok := precedences[p.curToken.Type]; ok {
+		return p
+	}
+
+	return LOWEST
 }

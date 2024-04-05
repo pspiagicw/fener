@@ -33,6 +33,7 @@ func main() {
 		}
 
 		fmt.Println(litter.Sdump(program))
+		fmt.Println(program)
 
 	}
 }
