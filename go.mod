@@ -2,7 +2,10 @@ module github.com/pspiagicw/fener
 
 go 1.21.4
 
-require github.com/pspiagicw/goreland v0.0.0-20231129143657-4b9ff8ac7ad5
+require (
+	github.com/davecgh/go-spew v1.1.1
+	github.com/pspiagicw/goreland v0.0.0-20231129143657-4b9ff8ac7ad5
+)
 
 require (
 	github.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect

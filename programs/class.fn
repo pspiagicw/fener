@@ -19,6 +19,6 @@ print(var.giveName(name))
 ;; You can only have class methods, no attributes.
 ;; Meaning, you can't do this
 
-var.name = "something else"
+;; var.name = "something else"
 
 ;; Declare a setter or some other method for that

@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/pspiagicw/fener/lexer"
+	"github.com/pspiagicw/fener/parser"
 	"github.com/pspiagicw/goreland"
 )
 
@@ -20,17 +22,20 @@ func main() {
 			goreland.LogFatal("Error reading string: %v", err)
 		}
 
-		l := lexer.NewLexer(value)
+		l := lexer.New(value)
 
-		t := l.Next()
+		p := parser.New(l)
 
-		for t.Type != "EOF" {
-			if l.Error() != nil {
-				goreland.LogError("Error: %v", l.Error())
-			}
-			fmt.Println(t)
-			t = l.Next()
+		program := p.Parse()
+
+		for _, err := range p.Errors() {
+			fmt.Println(err)
 		}
+
+		spew.Config.DisablePointerAddresses = true
+		spew.Config.Indent = "\t"
+
+		spew.Printf("%#v\n", program)
 
 	}
 }

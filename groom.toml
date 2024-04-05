@@ -9,7 +9,7 @@ command = "go build ."
 
 
 [task.test]
-command = "go test ./lexer"
+command = "go test ./..."
 depends = [
     "format"
 ]

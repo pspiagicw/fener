@@ -1,7 +1,7 @@
 fn printFloydsTriangle(n)
     number = 1
     for i = 1 to n do
-        for j = 1 to i do
+        for j = 1 to i then
             print(number)
             number = number + 1
         end

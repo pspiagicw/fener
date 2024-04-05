@@ -69,5 +69,6 @@ const (
 
 	// Misc
 
-	DOT = "."
+	DOT   = "."
+	COMMA = ","
 )

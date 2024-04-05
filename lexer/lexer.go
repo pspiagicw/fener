@@ -16,7 +16,7 @@ type Lexer struct {
 	err          error  // errors encountered during lexing
 }
 
-func NewLexer(input string) *Lexer {
+func New(input string) *Lexer {
 	l := &Lexer{
 		input:        input,
 		position:     -1,
@@ -155,6 +155,8 @@ func (l *Lexer) Next() *token.Token {
 	switch l.ch {
 	case ".":
 		return l.token(token.DOT, ".")
+	case ",":
+		return l.token(token.COMMA, ",")
 	case "(":
 		return l.token(token.LPAREN, "(")
 	case ")":

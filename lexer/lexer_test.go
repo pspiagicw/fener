@@ -123,10 +123,11 @@ func TestEqualityRelationalTokens(t *testing.T) {
 }
 
 func TestMiscellaneousTokens(t *testing.T) {
-	input := "."
+	input := ".,"
 
 	expectedTokens := []token.Token{
 		{Type: token.DOT, Value: "."},
+		{Type: token.COMMA, Value: ","},
 		{Type: token.EOF, Value: ""},
 	}
 
@@ -135,7 +136,7 @@ func TestMiscellaneousTokens(t *testing.T) {
 func checkTokens(t *testing.T, expected []token.Token, input string) {
 	t.Helper()
 
-	lexer := NewLexer(input)
+	lexer := New(input)
 
 	for i, expectedToken := range expected {
 		actualToken := lexer.Next()
@@ -197,6 +198,7 @@ func TestLexerTokenization(t *testing.T) {
 		{Type: token.INT, Value: "1"},
 		{Type: token.RPAREN, Value: ")"},
 		{Type: token.END, Value: "end"},
+		{Type: token.COMMENT, Value: " print the result"},
 		{Type: token.IDENT, Value: "result"},
 		{Type: token.ASSIGN, Value: "="},
 		{Type: token.IDENT, Value: "factorial"},
