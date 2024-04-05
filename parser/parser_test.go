@@ -9,6 +9,23 @@ import (
 	"github.com/pspiagicw/fener/token"
 )
 
+func TestParserIdentifiers(t *testing.T) {
+	input := `
+    identA identB
+    `
+
+	expectedTree := []ast.Statement{
+		&ast.ExpressionStatement{
+			Expression: &ast.Identifier{Value: "identA", Token: &token.Token{Type: token.IDENT, Value: "identA", Line: 1}},
+		},
+		&ast.ExpressionStatement{
+			Expression: &ast.Identifier{Value: "identB", Token: &token.Token{Type: token.IDENT, Value: "identB", Line: 1}},
+		},
+	}
+
+	checkTree(t, input, expectedTree)
+}
+
 func TestParserIntegerExpression(t *testing.T) {
 	input := `
     123

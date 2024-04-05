@@ -28,12 +28,12 @@ func main() {
 
 		program := p.Parse()
 
+		fmt.Println(litter.Sdump(program))
+		fmt.Println(program)
+
 		for _, err := range p.Errors() {
 			fmt.Println(err)
 		}
-
-		fmt.Println(litter.Sdump(program))
-		fmt.Println(program)
 
 	}
 }

@@ -11,6 +11,8 @@ import (
 const (
 	_ = iota
 	LOWEST
+	EQUALS
+	COMPARE
 	ADDITION
 	MULTIPLY
 	MOD
@@ -21,6 +23,10 @@ var precedences = map[token.TokenType]int{
 	token.MINUS:    ADDITION,
 	token.MULTIPLY: MULTIPLY,
 	token.DIVIDE:   MULTIPLY,
+	token.EQ:       EQUALS,
+	token.NOT_EQ:   EQUALS,
+	token.LT:       COMPARE,
+	token.GT:       COMPARE,
 	token.MOD:      MOD,
 }
 
@@ -45,19 +51,26 @@ func (p *Parser) Errors() []string {
 func New(l *lexer.Lexer) *Parser {
 	p := &Parser{l: l}
 
-	p.infixParseFns = map[token.TokenType]infixParseFn{}
 	p.prefixParseFns = map[token.TokenType]prefixParseFn{}
 
 	p.registerPrefix(token.INT, p.parseInteger)
 	p.registerPrefix(token.STRING, p.parseString)
 	p.registerPrefix(token.TRUE, p.parseBoolean)
 	p.registerPrefix(token.FALSE, p.parseBoolean)
+	p.registerPrefix(token.IDENT, p.parseIdent)
+	p.registerPrefix(token.LPAREN, p.parseGroupedExpression)
+
+	p.infixParseFns = map[token.TokenType]infixParseFn{}
 
 	p.registerInfix(token.PLUS, p.parseInfixExpression)
 	p.registerInfix(token.MINUS, p.parseInfixExpression)
 	p.registerInfix(token.MULTIPLY, p.parseInfixExpression)
 	p.registerInfix(token.DIVIDE, p.parseInfixExpression)
 	p.registerInfix(token.MOD, p.parseInfixExpression)
+	p.registerInfix(token.EQ, p.parseInfixExpression)
+	p.registerInfix(token.NOT_EQ, p.parseInfixExpression)
+	p.registerInfix(token.LT, p.parseInfixExpression)
+	p.registerInfix(token.GT, p.parseInfixExpression)
 
 	p.advance()
 	p.advance()

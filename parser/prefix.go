@@ -40,3 +40,23 @@ func (p *Parser) parseBoolean() ast.Expression {
 
 	return b
 }
+func (p *Parser) parseIdent() ast.Expression {
+	i := &ast.Identifier{Token: p.curToken, Value: p.curToken.Value}
+
+	p.advance()
+
+	return i
+}
+func (p *Parser) parseGroupedExpression() ast.Expression {
+	p.advance()
+
+	exp := p.parseExpression(LOWEST)
+
+	if p.curTokenIs(token.RPAREN) {
+		p.advance()
+	} else {
+		p.errors = append(p.errors, "expected )")
+	}
+
+	return exp
+}

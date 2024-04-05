@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/pspiagicw/fener/ast"
+	"github.com/pspiagicw/fener/lexer"
 	"github.com/pspiagicw/fener/token"
 )
 
@@ -135,4 +136,95 @@ func TestParserInfixComplexB(t *testing.T) {
 	}
 
 	checkTree(t, input, expectedTree)
+}
+func TestParserInfixTable(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected string
+	}{
+		{
+			"5 < 4 != 3 > 4",
+			"((5 < 4) != (3 > 4))",
+		},
+		{
+			"a + b + c",
+			"((a + b) + c)",
+		},
+		{
+			"a + b - c",
+			"((a + b) - c)",
+		},
+		{
+			"a * b * c",
+			"((a * b) * c)",
+		},
+		{
+			"a * b / c",
+			"((a * b) / c)",
+		},
+		{
+			"a + b / c",
+			"(a + (b / c))",
+		},
+		{
+			"a + b * c + d / e - f",
+			"(((a + (b * c)) + (d / e)) - f)",
+		},
+		{
+			"5 > 4 == 3 < 4",
+			"((5 > 4) == (3 < 4))",
+		},
+		{
+			"5 < 4 != 3 > 4",
+			"((5 < 4) != (3 > 4))",
+		},
+		{
+			"3 + 4 * 5 == 3 * 1 + 4 * 5",
+			"((3 + (4 * 5)) == ((3 * 1) + (4 * 5)))",
+		},
+		{
+			"3 + 4 * 5 == 3 * 1 + 4 * 5",
+			"((3 + (4 * 5)) == ((3 * 1) + (4 * 5)))",
+		},
+		{
+			"3 > 5 == true",
+			"((3 > 5) == true)",
+		},
+		{
+			"3 > 5 == false",
+			"((3 > 5) == false)",
+		},
+		{
+			"1 + (2 + 3) + 4",
+			"((1 + (2 + 3)) + 4)",
+		},
+		{
+			"(5 + 5) * 2",
+			"((5 + 5) * 2)",
+		},
+		{
+			"2 / (5 + 5)",
+			"(2 / (5 + 5))",
+		},
+	}
+
+	for _, tt := range tests {
+		l := lexer.New(tt.input)
+		p := New(l)
+
+		tree := p.Parse()
+
+		if len(p.errors) != 0 {
+			for _, err := range p.errors {
+				t.Logf("Parser error: %s", err)
+			}
+			t.Fatalf("Parser has %d errors", len(p.errors))
+		}
+
+		statement := tree.Statements[0]
+		if tt.expected != statement.String() {
+			t.Errorf("Expected %s, got %s", tt.expected, statement.String())
+		}
+
+	}
 }

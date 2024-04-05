@@ -56,7 +56,7 @@ type Integer struct {
 
 func (i *Integer) Name() string    { return "Integer" }
 func (i *Integer) expressionNode() {}
-func (i *Integer) String() string  { return fmt.Sprintf("Integer(%d)", i.Value) }
+func (i *Integer) String() string  { return fmt.Sprintf("%d", i.Value) }
 
 type String struct {
 	Token *token.Token
@@ -88,7 +88,7 @@ type Boolean struct {
 
 func (b *Boolean) Name() string    { return "Boolean" }
 func (b *Boolean) expressionNode() {}
-func (b *Boolean) String() string  { return fmt.Sprintf("Boolean(%t)", b.Value) }
+func (b *Boolean) String() string  { return fmt.Sprintf("%t", b.Value) }
 
 type InfixExpression struct {
 	Left     Expression
@@ -101,3 +101,12 @@ func (ie *InfixExpression) expressionNode() {}
 func (ie *InfixExpression) String() string {
 	return fmt.Sprintf("(%s %s %s)", ie.Left.String(), ie.Operator, ie.Right.String())
 }
+
+type Identifier struct {
+	Token *token.Token
+	Value string
+}
+
+func (i *Identifier) Name() string    { return "Identifier" }
+func (i *Identifier) expressionNode() {}
+func (i *Identifier) String() string  { return fmt.Sprintf("%s", i.Value) }
