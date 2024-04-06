@@ -46,6 +46,7 @@ const (
 	IF    = "IF"
 	ELSE  = "ELSE"
 	WHILE = "WHILE"
+	ELIF  = "ELIF"
 
 	FALSE = "FALSE"
 	TRUE  = "TRUE"

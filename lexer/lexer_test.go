@@ -86,7 +86,7 @@ func TestIdentifierTokens(t *testing.T) {
 
 func TestKeywordTokens(t *testing.T) {
 	// Test case for keywords
-	input := "if else while false true return fn end and or not then"
+	input := "if else while false true return fn end and or not then elif"
 
 	expectedTokens := []token.Token{
 		{Type: token.IF, Value: "if"},
@@ -101,6 +101,7 @@ func TestKeywordTokens(t *testing.T) {
 		{Type: token.OR, Value: "or"},
 		{Type: token.NOT, Value: "not"},
 		{Type: token.THEN, Value: "then"},
+		{Type: token.ELIF, Value: "elif"},
 		{Type: token.EOF, Value: ""},
 	}
 	checkTokens(t, expectedTokens, input)

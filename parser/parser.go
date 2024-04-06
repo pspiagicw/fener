@@ -16,9 +16,11 @@ const (
 	ADDITION
 	MULTIPLY
 	MOD
+	ASSIGNMENT
 )
 
 var precedences = map[token.TokenType]int{
+	token.ASSIGN:   ASSIGNMENT,
 	token.PLUS:     ADDITION,
 	token.MINUS:    ADDITION,
 	token.MULTIPLY: MULTIPLY,
@@ -59,6 +61,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerPrefix(token.FALSE, p.parseBoolean)
 	p.registerPrefix(token.IDENT, p.parseIdent)
 	p.registerPrefix(token.LPAREN, p.parseGroupedExpression)
+	p.registerPrefix(token.IF, p.parseIfExpression)
 
 	p.infixParseFns = map[token.TokenType]infixParseFn{}
 
@@ -71,6 +74,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerInfix(token.NOT_EQ, p.parseInfixExpression)
 	p.registerInfix(token.LT, p.parseInfixExpression)
 	p.registerInfix(token.GT, p.parseInfixExpression)
+	p.registerInfix(token.ASSIGN, p.parseAssignmentExpression)
 
 	p.advance()
 	p.advance()
@@ -177,4 +181,13 @@ func (p *Parser) curPrecedence() int {
 	}
 
 	return LOWEST
+}
+func (p *Parser) expect(t token.TokenType) bool {
+	if p.curTokenIs(t) {
+		p.advance()
+		return true
+	}
+
+	p.errors = append(p.errors, fmt.Sprintf("expected %s, got %s", t, p.curToken.Type))
+	return false
 }

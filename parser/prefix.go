@@ -60,3 +60,52 @@ func (p *Parser) parseGroupedExpression() ast.Expression {
 
 	return exp
 }
+
+func (p *Parser) parseIfExpression() ast.Expression {
+	ifExp := &ast.IfExpression{Token: p.curToken}
+	p.advance()
+
+	ifExp.Elif = map[ast.Expression]*ast.BlockStatement{}
+
+	ifExp.Condition = p.parseExpression(LOWEST)
+
+	if !p.expect(token.THEN) {
+		return nil
+	}
+
+	ifExp.Consequence = p.parseBlockStatement()
+
+	for p.curTokenIs(token.ELIF) {
+		p.advance()
+		condition := p.parseExpression(LOWEST)
+		if !p.expect(token.THEN) {
+			return nil
+		}
+		body := p.parseBlockStatement()
+		ifExp.Elif[condition] = body
+	}
+
+	if p.curTokenIs(token.ELSE) {
+		p.advance()
+		ifExp.Alternative = p.parseBlockStatement()
+	}
+
+	if !p.expect(token.END) {
+		return nil
+	}
+
+	return ifExp
+
+}
+func (p *Parser) parseBlockStatement() *ast.BlockStatement {
+
+	b := &ast.BlockStatement{Token: p.curToken}
+
+	b.Statements = []ast.Statement{}
+
+	for !p.curTokenIs(token.END) && !p.curTokenIs(token.EOF) && !p.curTokenIs(token.ELSE) && !p.curTokenIs(token.ELIF) {
+		b.Statements = append(b.Statements, p.parseStatement())
+	}
+
+	return b
+}

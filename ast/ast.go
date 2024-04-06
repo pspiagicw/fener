@@ -110,3 +110,61 @@ type Identifier struct {
 func (i *Identifier) Name() string    { return "Identifier" }
 func (i *Identifier) expressionNode() {}
 func (i *Identifier) String() string  { return fmt.Sprintf("%s", i.Value) }
+
+type AssignmentExpression struct {
+	Token  *token.Token
+	Value  Expression
+	Target *Identifier
+}
+
+func (ae *AssignmentExpression) Name() string    { return "AssignmentExpression" }
+func (ae *AssignmentExpression) expressionNode() {}
+func (ae *AssignmentExpression) String() string {
+	return fmt.Sprintf("%s = %s", ae.Target, ae.Value.String())
+}
+
+type IfExpression struct {
+	Token       *token.Token
+	Condition   Expression
+	Consequence *BlockStatement
+	Elif        map[Expression]*BlockStatement
+	Alternative *BlockStatement
+}
+
+func (ie *IfExpression) Name() string    { return "IfExpression" }
+func (ie *IfExpression) expressionNode() {}
+func (ie *IfExpression) String() string {
+	var out strings.Builder
+	out.WriteString("if ")
+	out.WriteString(ie.Condition.String())
+	out.WriteString(" then\n")
+	out.WriteString(ie.Consequence.String())
+	for k, v := range ie.Elif {
+		out.WriteString("elif ")
+		out.WriteString(k.String())
+		out.WriteString(" then\n")
+		out.WriteString(v.String())
+	}
+	if ie.Alternative != nil {
+		out.WriteString("else\n")
+		out.WriteString(ie.Alternative.String())
+	}
+	out.WriteString("end")
+	return out.String()
+}
+
+type BlockStatement struct {
+	Token      *token.Token
+	Statements []Statement
+}
+
+func (bs *BlockStatement) Name() string   { return "BlockStatement" }
+func (bs *BlockStatement) statementNode() {}
+func (bs *BlockStatement) String() string {
+	var out strings.Builder
+	for _, s := range bs.Statements {
+		out.WriteString(s.String())
+		out.WriteString("\n")
+	}
+	return out.String()
+}
