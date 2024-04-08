@@ -8,6 +8,30 @@ import (
 	"github.com/pspiagicw/fener/token"
 )
 
+func TestFunctionCall(t *testing.T) {
+	input := `add() add(1, 2)`
+
+	expectedTree := []ast.Statement{
+		&ast.ExpressionStatement{
+			Expression: &ast.CallExpression{
+				Function:  &ast.Identifier{Value: "add", Token: &token.Token{Type: token.IDENT, Value: "add", Line: 0}},
+				Arguments: []ast.Expression{},
+			},
+		},
+		&ast.ExpressionStatement{
+			Expression: &ast.CallExpression{
+				Function: &ast.Identifier{Value: "add", Token: &token.Token{Type: token.IDENT, Value: "add", Line: 0}},
+				Arguments: []ast.Expression{
+					&ast.Integer{Value: 1, Token: &token.Token{Type: token.INT, Value: "1", Line: 0}},
+					&ast.Integer{Value: 2, Token: &token.Token{Type: token.INT, Value: "2", Line: 0}},
+				},
+			},
+		},
+	}
+
+	checkTree(t, input, expectedTree)
+}
+
 func TestParserInfixSimple(t *testing.T) {
 	input := `5 + 5`
 

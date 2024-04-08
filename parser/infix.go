@@ -1,6 +1,46 @@
 package parser
 
-import "github.com/pspiagicw/fener/ast"
+import (
+	"github.com/pspiagicw/fener/ast"
+	"github.com/pspiagicw/fener/token"
+)
+
+func (p *Parser) parseCallExpression(left ast.Expression) ast.Expression {
+	expression := &ast.CallExpression{
+		Token:    p.curToken,
+		Function: left,
+	}
+
+	p.advance()
+
+	expression.Arguments = p.parseExpressionList(token.RPAREN)
+
+	return expression
+}
+func (p *Parser) parseExpressionList(end token.TokenType) []ast.Expression {
+	expressions := []ast.Expression{}
+
+	if p.curTokenIs(end) {
+		p.advance()
+		return expressions
+	}
+
+	for true {
+		expression := p.parseExpression(LOWEST)
+		if expression != nil {
+			expressions = append(expressions, expression)
+		}
+		if p.curTokenIs(end) {
+			p.advance()
+			break
+		}
+		if !p.expect(token.COMMA) {
+			return expressions
+		}
+	}
+
+	return expressions
+}
 
 func (p *Parser) parseInfixExpression(left ast.Expression) ast.Expression {
 	expression := &ast.InfixExpression{

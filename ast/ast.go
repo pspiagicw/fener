@@ -168,3 +168,25 @@ func (bs *BlockStatement) String() string {
 	}
 	return out.String()
 }
+
+type CallExpression struct {
+	Token     *token.Token
+	Function  Expression
+	Arguments []Expression
+}
+
+func (ce *CallExpression) Name() string    { return "CallExpression" }
+func (ce *CallExpression) expressionNode() {}
+func (ce *CallExpression) String() string {
+	var out strings.Builder
+	out.WriteString(ce.Function.String())
+	out.WriteString("(")
+	for i, arg := range ce.Arguments {
+		out.WriteString(arg.String())
+		if i != len(ce.Arguments)-1 {
+			out.WriteString(", ")
+		}
+	}
+	out.WriteString(")")
+	return out.String()
+}

@@ -17,6 +17,7 @@ const (
 	MULTIPLY
 	MOD
 	ASSIGNMENT
+	CALL
 )
 
 var precedences = map[token.TokenType]int{
@@ -30,6 +31,7 @@ var precedences = map[token.TokenType]int{
 	token.LT:       COMPARE,
 	token.GT:       COMPARE,
 	token.MOD:      MOD,
+	token.LPAREN:   CALL,
 }
 
 type infixParseFn func(ast.Expression) ast.Expression
@@ -75,6 +77,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerInfix(token.LT, p.parseInfixExpression)
 	p.registerInfix(token.GT, p.parseInfixExpression)
 	p.registerInfix(token.ASSIGN, p.parseAssignmentExpression)
+	p.registerInfix(token.LPAREN, p.parseCallExpression)
 
 	p.advance()
 	p.advance()
