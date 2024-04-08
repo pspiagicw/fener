@@ -190,3 +190,21 @@ func (ce *CallExpression) String() string {
 	out.WriteString(")")
 	return out.String()
 }
+
+type WhileStatement struct {
+	Token       *token.Token
+	Condition   Expression
+	Consequence *BlockStatement
+}
+
+func (ws *WhileStatement) Name() string   { return "WhileStatement" }
+func (ws *WhileStatement) statementNode() {}
+func (ws *WhileStatement) String() string {
+	var out strings.Builder
+	out.WriteString("while ")
+	out.WriteString(ws.Condition.String())
+	out.WriteString(" then\n")
+	out.WriteString(ws.Consequence.String())
+	out.WriteString("end")
+	return out.String()
+}

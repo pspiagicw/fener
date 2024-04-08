@@ -7,6 +7,39 @@ import (
 	"github.com/pspiagicw/fener/token"
 )
 
+func TestWhileStatement(t *testing.T) {
+	input := `
+    while true then
+        print("Hello, World")
+    end
+    `
+
+	expectedTree := []ast.Statement{
+		&ast.WhileStatement{
+			Condition: &ast.Boolean{Value: true, Token: &token.Token{Type: token.TRUE, Value: "true", Line: 1}},
+			Consequence: &ast.BlockStatement{
+				Statements: []ast.Statement{
+					&ast.ExpressionStatement{
+						Expression: &ast.CallExpression{
+							Function: &ast.Identifier{Value: "print", Token: &token.Token{Type: token.IDENT, Value: "print", Line: 2}},
+							Arguments: []ast.Expression{
+								&ast.String{Value: "Hello, World", Token: &token.Token{Type: token.STRING, Value: "Hello, World", Line: 2}},
+							},
+							Token: &token.Token{Type: token.LPAREN, Value: "(", Line: 2},
+						},
+						Token: &token.Token{Type: token.IDENT, Value: "print", Line: 2},
+					},
+				},
+				Token: &token.Token{Type: token.THEN, Value: "then", Line: 1},
+			},
+			Token: &token.Token{Type: token.WHILE, Value: "while", Line: 1},
+		},
+	}
+
+	checkTree(t, input, expectedTree)
+
+}
+
 func TestParserReturnInt(t *testing.T) {
 	input := `
     return 123
