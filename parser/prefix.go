@@ -8,6 +8,18 @@ import (
 	"github.com/pspiagicw/fener/token"
 )
 
+func (p *Parser) parseArray() ast.Expression {
+	array := &ast.Array{Token: p.curToken}
+
+	if !p.expect(token.LSQUARE) {
+		return nil
+	}
+
+	array.Elements = p.parseExpressionList(token.RSQUARE)
+
+	return array
+}
+
 func (p *Parser) parseInteger() ast.Expression {
 	value := p.curToken
 

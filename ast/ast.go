@@ -287,3 +287,23 @@ func (ie *IndexExpression) expressionNode() {}
 func (ie *IndexExpression) String() string {
 	return fmt.Sprintf("%s[%s]", ie.Left.String(), ie.Index.String())
 }
+
+type Array struct {
+	Token    *token.Token
+	Elements []Expression
+}
+
+func (a *Array) Name() string    { return "Array" }
+func (a *Array) expressionNode() {}
+func (a *Array) String() string {
+	var out strings.Builder
+	out.WriteString("[")
+	for i, elem := range a.Elements {
+		out.WriteString(elem.String())
+		if i != len(a.Elements)-1 {
+			out.WriteString(", ")
+		}
+	}
+	out.WriteString("]")
+	return out.String()
+}

@@ -74,6 +74,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerPrefix(token.LPAREN, p.parseGroupedExpression)
 	p.registerPrefix(token.IF, p.parseIfExpression)
 	p.registerPrefix(token.FUNCTION, p.parseLambda)
+	p.registerPrefix(token.LSQUARE, p.parseArray)
 
 	p.infixParseFns = map[token.TokenType]infixParseFn{}
 

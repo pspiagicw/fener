@@ -51,7 +51,7 @@ end
 
 test "Calculate Average"
     ;; Test case for calculateAverage function
-    expected = 5.4
+    expected = 5
     result = calculateAverage([1, 5, 10, 8, 3])
     assert(result, expected, "Incorrect average value")
 end

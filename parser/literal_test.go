@@ -9,6 +9,54 @@ import (
 	"github.com/pspiagicw/fener/token"
 )
 
+func TestArrayParser(t *testing.T) {
+	input := `
+    [1, 2, 3]
+    ;; this comment is required
+    ;; or else the next line is parsed as a index expressioo
+    [1 + 2, someArr[2] , someFunc(arg, arg, arg)]
+    `
+
+	expectedTree := []ast.Statement{
+		&ast.ExpressionStatement{
+			Expression: &ast.Array{
+				Elements: []ast.Expression{
+					&ast.Integer{Value: 1, Token: &token.Token{Type: token.INT, Value: "1", Line: 1}},
+					&ast.Integer{Value: 2, Token: &token.Token{Type: token.INT, Value: "2", Line: 1}},
+					&ast.Integer{Value: 3, Token: &token.Token{Type: token.INT, Value: "3", Line: 1}},
+				},
+				Token: &token.Token{Type: token.LSQUARE, Value: "[", Line: 1},
+			},
+		},
+		&ast.ExpressionStatement{
+			Expression: &ast.Array{
+				Elements: []ast.Expression{
+					&ast.InfixExpression{
+						Left:     &ast.Integer{Value: 1, Token: &token.Token{Type: token.INT, Value: "1", Line: 2}},
+						Operator: token.PLUS,
+						Right:    &ast.Integer{Value: 2, Token: &token.Token{Type: token.INT, Value: "2", Line: 2}},
+					},
+					&ast.IndexExpression{
+						Left:  &ast.Identifier{Value: "someArr", Token: &token.Token{Type: token.IDENT, Value: "someArr", Line: 2}},
+						Index: &ast.Integer{Value: 2, Token: &token.Token{Type: token.INT, Value: "2", Line: 2}},
+					},
+					&ast.CallExpression{
+						Function: &ast.Identifier{Value: "someFunc", Token: &token.Token{Type: token.IDENT, Value: "someFunc", Line: 2}},
+						Arguments: []ast.Expression{
+							&ast.Identifier{Value: "arg", Token: &token.Token{Type: token.IDENT, Value: "arg", Line: 2}},
+							&ast.Identifier{Value: "arg", Token: &token.Token{Type: token.IDENT, Value: "arg", Line: 2}},
+							&ast.Identifier{Value: "arg", Token: &token.Token{Type: token.IDENT, Value: "arg", Line: 2}},
+						},
+					},
+				},
+				Token: &token.Token{Type: token.LSQUARE, Value: "[", Line: 2},
+			},
+		},
+	}
+
+	checkTree(t, input, expectedTree)
+}
+
 func TestParserIdentifiers(t *testing.T) {
 	input := `
     identA identB
