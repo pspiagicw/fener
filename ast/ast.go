@@ -65,7 +65,7 @@ type String struct {
 
 func (s *String) Name() string    { return "String" }
 func (s *String) expressionNode() {}
-func (s *String) String() string  { return fmt.Sprintf("String(%s)", s.Value) }
+func (s *String) String() string  { return fmt.Sprintf("\"%s\"", s.Value) }
 
 type ExpressionStatement struct {
 	Expression Expression
@@ -205,6 +205,29 @@ func (ws *WhileStatement) String() string {
 	out.WriteString(ws.Condition.String())
 	out.WriteString(" then\n")
 	out.WriteString(ws.Consequence.String())
+	out.WriteString("end")
+	return out.String()
+}
+
+type Lambda struct {
+	Token     *token.Token
+	Arguments []*Identifier
+	Body      *BlockStatement
+}
+
+func (l *Lambda) Name() string    { return "Lambda" }
+func (l *Lambda) expressionNode() {}
+func (l *Lambda) String() string {
+	var out strings.Builder
+	out.WriteString("fn(")
+	for i, arg := range l.Arguments {
+		out.WriteString(arg.String())
+		if i != len(l.Arguments)-1 {
+			out.WriteString(", ")
+		}
+	}
+	out.WriteString(")\n")
+	out.WriteString(l.Body.String())
 	out.WriteString("end")
 	return out.String()
 }

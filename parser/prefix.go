@@ -109,3 +109,40 @@ func (p *Parser) parseBlockStatement() *ast.BlockStatement {
 
 	return b
 }
+
+func (p *Parser) parseLambda() ast.Expression {
+	lambda := &ast.Lambda{Token: p.curToken}
+
+	p.advance()
+
+	if !p.expect(token.LPAREN) {
+		return nil
+	}
+
+	lambda.Arguments = p.parseFunctionParameters()
+
+	lambda.Body = p.parseBlockStatement()
+
+	if !p.expect(token.END) {
+		return nil
+	}
+
+	return lambda
+}
+func (p *Parser) parseFunctionParameters() []*ast.Identifier {
+	expressions := p.parseExpressionList(token.RPAREN)
+
+	identifiers := []*ast.Identifier{}
+
+	for _, exp := range expressions {
+		ident, ok := exp.(*ast.Identifier)
+		if !ok {
+			message := fmt.Sprintf("Expected identifier, got %v", exp.Name())
+			p.errors = append(p.errors, message)
+			return nil
+		}
+		identifiers = append(identifiers, ident)
+	}
+
+	return identifiers
+}

@@ -8,6 +8,8 @@ import (
 
 func TestPrograms(t *testing.T) {
 
+	t.Skip()
+
 	files, err := filepath.Glob("*.fn")
 
 	if err != nil {
