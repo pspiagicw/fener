@@ -231,3 +231,29 @@ func (l *Lambda) String() string {
 	out.WriteString("end")
 	return out.String()
 }
+
+type FunctionStatement struct {
+	Token     *token.Token
+	Target    *Identifier
+	Arguments []*Identifier
+	Body      *BlockStatement
+}
+
+func (fs *FunctionStatement) Name() string   { return "FunctionStatement" }
+func (fs *FunctionStatement) statementNode() {}
+func (fs *FunctionStatement) String() string {
+	var out strings.Builder
+	out.WriteString("fn ")
+	out.WriteString(fs.Target.String())
+	out.WriteString("(")
+	for i, arg := range fs.Arguments {
+		out.WriteString(arg.String())
+		if i != len(fs.Arguments)-1 {
+			out.WriteString(", ")
+		}
+	}
+	out.WriteString(")\n")
+	out.WriteString(fs.Body.String())
+	out.WriteString("end")
+	return out.String()
+}

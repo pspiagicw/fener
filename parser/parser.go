@@ -129,6 +129,8 @@ func (p *Parser) parseStatement() ast.Statement {
 	case token.COMMENT:
 		p.advance()
 		return nil
+	case token.FUNCTION:
+		return p.parseFunctionStatement()
 	default:
 		return p.parseExpressionStatement()
 	}

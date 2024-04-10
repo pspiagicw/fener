@@ -33,3 +33,28 @@ func (p *Parser) parseWhileStatement() *ast.WhileStatement {
 
 	return stmt
 }
+func (p *Parser) parseFunctionStatement() *ast.FunctionStatement {
+	stmt := &ast.FunctionStatement{Token: p.curToken}
+
+	p.advance()
+
+	stmt.Target = &ast.Identifier{Token: p.curToken, Value: p.curToken.Value}
+
+	if !p.expect(token.IDENT) {
+		return nil
+	}
+
+	if !p.expect(token.LPAREN) {
+		return nil
+	}
+
+	stmt.Arguments = p.parseFunctionParameters()
+
+	stmt.Body = p.parseBlockStatement()
+
+	if !p.expect(token.END) {
+		return nil
+	}
+
+	return stmt
+}
