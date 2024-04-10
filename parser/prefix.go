@@ -8,6 +8,16 @@ import (
 	"github.com/pspiagicw/fener/token"
 )
 
+func (p *Parser) parsePrefixExpression() ast.Expression {
+	expression := &ast.PrefixExpression{Token: p.curToken, Operator: p.curToken.Type}
+
+	p.advance()
+
+	expression.Right = p.parseExpression(PREFIX)
+
+	return expression
+}
+
 func (p *Parser) parseArray() ast.Expression {
 	array := &ast.Array{Token: p.curToken}
 

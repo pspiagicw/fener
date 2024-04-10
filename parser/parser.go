@@ -17,9 +17,10 @@ const (
 	MULTIPLY
 	MOD
 	BOOLEAN
-	ASSIGNMENT
+	PREFIX
 	CALL
 	INDEX
+	ASSIGNMENT
 )
 
 var precedences = map[token.TokenType]int{
@@ -75,6 +76,8 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerPrefix(token.IF, p.parseIfExpression)
 	p.registerPrefix(token.FUNCTION, p.parseLambda)
 	p.registerPrefix(token.LSQUARE, p.parseArray)
+	p.registerPrefix(token.MINUS, p.parsePrefixExpression)
+	p.registerPrefix(token.BANG, p.parsePrefixExpression)
 
 	p.infixParseFns = map[token.TokenType]infixParseFn{}
 

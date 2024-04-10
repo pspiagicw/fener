@@ -285,7 +285,7 @@ type IndexExpression struct {
 func (ie *IndexExpression) Name() string    { return "IndexExpression" }
 func (ie *IndexExpression) expressionNode() {}
 func (ie *IndexExpression) String() string {
-	return fmt.Sprintf("%s[%s]", ie.Left.String(), ie.Index.String())
+	return fmt.Sprintf("(%s[%s])", ie.Left.String(), ie.Index.String())
 }
 
 type Array struct {
@@ -306,4 +306,16 @@ func (a *Array) String() string {
 	}
 	out.WriteString("]")
 	return out.String()
+}
+
+type PrefixExpression struct {
+	Token    *token.Token
+	Operator token.TokenType
+	Right    Expression
+}
+
+func (pe *PrefixExpression) Name() string    { return "PrefixExpression" }
+func (pe *PrefixExpression) expressionNode() {}
+func (pe *PrefixExpression) String() string {
+	return fmt.Sprintf("(%s%s)", pe.Operator, pe.Right.String())
 }
