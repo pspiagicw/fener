@@ -2,6 +2,7 @@ package handle
 
 import (
 	"github.com/pspiagicw/fener/argparse"
+	"github.com/pspiagicw/fener/help"
 	"github.com/pspiagicw/fener/repl"
 	"github.com/pspiagicw/fener/run"
 	"github.com/pspiagicw/goreland"
@@ -10,11 +11,17 @@ import (
 var handles = map[string]func(*argparse.Opts){
 	"repl": repl.Handle,
 	"run":  run.Handle,
+	"version": func(opts *argparse.Opts) {
+		help.Version(opts.Version)
+	},
+	"help": func(opts *argparse.Opts) {
+		help.Handle(opts.Args, opts.Version)
+	},
 }
 
 func Handle(opts *argparse.Opts) {
 	if len(opts.Args) == 0 {
-		goreland.LogFatal("Print help")
+		help.Usage()
 		return
 	}
 

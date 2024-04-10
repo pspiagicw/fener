@@ -6,6 +6,7 @@ import (
 
 	"github.com/pspiagicw/fener/argparse"
 	"github.com/pspiagicw/fener/ast"
+	"github.com/pspiagicw/fener/help"
 	"github.com/pspiagicw/fener/lexer"
 	"github.com/pspiagicw/fener/parser"
 	"github.com/pspiagicw/goreland"
@@ -15,6 +16,8 @@ import (
 func parseRunArgs(opts *argparse.Opts) {
 
 	flag := flag.NewFlagSet("fener run", flag.ExitOnError)
+
+	flag.Usage = help.Repl
 
 	flag.BoolVar(&opts.PrintAST, "print-ast", false, "Print the AST of the program")
 

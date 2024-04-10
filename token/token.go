@@ -60,6 +60,9 @@ const (
 	OR  = "OR"
 	NOT = "NOT"
 
+	BITAND = "BITAND"
+	BITOR  = "BITOR"
+
 	// Comparison operators
 	EQ     = "=="
 	NOT_EQ = "!="

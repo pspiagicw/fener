@@ -103,10 +103,6 @@ func (l *Lexer) keyword(ident string) *token.Token {
 		return l.token(token.RETURN, "return")
 	case "end":
 		return l.token(token.END, "end")
-	case "and":
-		return l.token(token.AND, "and")
-	case "or":
-		return l.token(token.OR, "or")
 	case "not":
 		return l.token(token.NOT, "not")
 	case "then":
@@ -155,6 +151,18 @@ func (l *Lexer) Next() *token.Token {
 	}
 
 	switch l.ch {
+	case "&":
+		if l.peek() == "&" {
+			l.advance()
+			return l.token(token.AND, "&&")
+		}
+		return l.token(token.BITAND, l.ch)
+	case "|":
+		if l.peek() == "|" {
+			l.advance()
+			return l.token(token.OR, "||")
+		}
+		return l.token(token.BITOR, l.ch)
 	case ".":
 		return l.token(token.DOT, ".")
 	case ",":

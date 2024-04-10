@@ -8,6 +8,7 @@ import (
 
 	"github.com/pspiagicw/fener/argparse"
 	"github.com/pspiagicw/fener/ast"
+	"github.com/pspiagicw/fener/help"
 	"github.com/pspiagicw/fener/lexer"
 	"github.com/pspiagicw/fener/parser"
 	"github.com/pspiagicw/goreland"
@@ -16,6 +17,8 @@ import (
 
 func parseReplArgs(opts *argparse.Opts) {
 	flag := flag.NewFlagSet("fener repl", flag.ExitOnError)
+
+	flag.Usage = help.Repl
 
 	flag.BoolVar(&opts.PrintAST, "print-ast", false, "Print the AST of the program")
 
@@ -40,6 +43,8 @@ func Handle(opts *argparse.Opts) {
 		if opts.PrintAST {
 			printAST(ast)
 		}
+
+		fmt.Println(ast)
 	}
 }
 func parseLine(line string) (*ast.Program, []string) {

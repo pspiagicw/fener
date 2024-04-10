@@ -16,6 +16,7 @@ const (
 	ADDITION
 	MULTIPLY
 	MOD
+	BOOLEAN
 	ASSIGNMENT
 	CALL
 )
@@ -30,8 +31,14 @@ var precedences = map[token.TokenType]int{
 	token.NOT_EQ:   EQUALS,
 	token.LT:       COMPARE,
 	token.GT:       COMPARE,
+	token.LTE:      COMPARE,
+	token.GTE:      COMPARE,
 	token.MOD:      MOD,
 	token.LPAREN:   CALL,
+	token.AND:      BOOLEAN,
+	token.OR:       BOOLEAN,
+	token.BITAND:   BOOLEAN,
+	token.BITOR:    BOOLEAN,
 }
 
 type infixParseFn func(ast.Expression) ast.Expression
@@ -76,8 +83,14 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerInfix(token.NOT_EQ, p.parseInfixExpression)
 	p.registerInfix(token.LT, p.parseInfixExpression)
 	p.registerInfix(token.GT, p.parseInfixExpression)
+	p.registerInfix(token.LTE, p.parseInfixExpression)
+	p.registerInfix(token.GTE, p.parseInfixExpression)
 	p.registerInfix(token.ASSIGN, p.parseAssignmentExpression)
 	p.registerInfix(token.LPAREN, p.parseCallExpression)
+	p.registerInfix(token.AND, p.parseInfixExpression)
+	p.registerInfix(token.OR, p.parseInfixExpression)
+	p.registerInfix(token.BITAND, p.parseInfixExpression)
+	p.registerInfix(token.BITOR, p.parseInfixExpression)
 
 	p.advance()
 	p.advance()
@@ -112,6 +125,9 @@ func (p *Parser) parseStatement() ast.Statement {
 		return p.parseReturnStatement()
 	case token.WHILE:
 		return p.parseWhileStatement()
+	case token.COMMENT:
+		p.advance()
+		return nil
 	default:
 		return p.parseExpressionStatement()
 	}

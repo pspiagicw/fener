@@ -86,7 +86,7 @@ func TestIdentifierTokens(t *testing.T) {
 
 func TestKeywordTokens(t *testing.T) {
 	// Test case for keywords
-	input := "if else while false true return fn end and or not then elif"
+	input := "if else while false true return fn end not then elif"
 
 	expectedTokens := []token.Token{
 		{Type: token.IF, Value: "if"},
@@ -97,8 +97,6 @@ func TestKeywordTokens(t *testing.T) {
 		{Type: token.RETURN, Value: "return"},
 		{Type: token.FUNCTION, Value: "fn"},
 		{Type: token.END, Value: "end"},
-		{Type: token.AND, Value: "and"},
-		{Type: token.OR, Value: "or"},
 		{Type: token.NOT, Value: "not"},
 		{Type: token.THEN, Value: "then"},
 		{Type: token.ELIF, Value: "elif"},
@@ -109,7 +107,7 @@ func TestKeywordTokens(t *testing.T) {
 
 func TestEqualityRelationalTokens(t *testing.T) {
 	// Test case for equality and relational operators
-	input := "== != < > <= >="
+	input := "== != < > <= >= && || & |"
 
 	expectedTokens := []token.Token{
 		{Type: token.EQ, Value: "=="},
@@ -118,6 +116,10 @@ func TestEqualityRelationalTokens(t *testing.T) {
 		{Type: token.GT, Value: ">"},
 		{Type: token.LTE, Value: "<="},
 		{Type: token.GTE, Value: ">="},
+		{Type: token.AND, Value: "&&"},
+		{Type: token.OR, Value: "||"},
+		{Type: token.BITAND, Value: "&"},
+		{Type: token.BITOR, Value: "|"},
 		{Type: token.EOF, Value: ""},
 	}
 	checkTokens(t, expectedTokens, input)

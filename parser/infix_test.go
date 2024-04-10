@@ -8,6 +8,50 @@ import (
 	"github.com/pspiagicw/fener/token"
 )
 
+func TestBooleanParser(t *testing.T) {
+	input := `
+    true && true
+    false || false
+
+    1 & 2
+    2 | 4
+    `
+
+	expectedTree := []ast.Statement{
+		&ast.ExpressionStatement{
+			Expression: &ast.InfixExpression{
+				Left:     &ast.Boolean{Value: true, Token: &token.Token{Type: token.TRUE, Value: "true", Line: 0}},
+				Operator: token.AND,
+				Right:    &ast.Boolean{Value: true, Token: &token.Token{Type: token.TRUE, Value: "true", Line: 0}},
+			},
+		},
+		&ast.ExpressionStatement{
+			Expression: &ast.InfixExpression{
+				Left:     &ast.Boolean{Value: false, Token: &token.Token{Type: token.FALSE, Value: "false", Line: 0}},
+				Operator: token.OR,
+				Right:    &ast.Boolean{Value: false, Token: &token.Token{Type: token.FALSE, Value: "false", Line: 0}},
+			},
+		},
+		&ast.ExpressionStatement{
+			Expression: &ast.InfixExpression{
+				Left:     &ast.Integer{Value: 1, Token: &token.Token{Type: token.INT, Value: "1", Line: 0}},
+				Operator: token.BITAND,
+				Right:    &ast.Integer{Value: 2, Token: &token.Token{Type: token.INT, Value: "2", Line: 0}},
+			},
+		},
+		&ast.ExpressionStatement{
+			Expression: &ast.InfixExpression{
+				Left:     &ast.Integer{Value: 2, Token: &token.Token{Type: token.INT, Value: "2", Line: 0}},
+				Operator: token.BITOR,
+				Right:    &ast.Integer{Value: 4, Token: &token.Token{Type: token.INT, Value: "4", Line: 0}},
+			},
+		},
+	}
+
+	checkTree(t, input, expectedTree)
+
+}
+
 func TestFunctionCall(t *testing.T) {
 	input := `add() add(1, 2)`
 
