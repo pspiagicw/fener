@@ -1,4 +1,4 @@
-fn function1()
+fn function()
     print("this is a function")
 end
 

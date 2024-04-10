@@ -257,3 +257,21 @@ func (fs *FunctionStatement) String() string {
 	out.WriteString("end")
 	return out.String()
 }
+
+type TestStatement struct {
+	Token      *token.Token
+	Target     *String
+	Statements *BlockStatement
+}
+
+func (ts *TestStatement) Name() string   { return "TestStatement" }
+func (ts *TestStatement) statementNode() {}
+func (ts *TestStatement) String() string {
+	var out strings.Builder
+	out.WriteString("test ")
+	out.WriteString(ts.Target.String())
+	out.WriteString("\n")
+	out.WriteString(ts.Statements.String())
+	out.WriteString("end\n")
+	return out.String()
+}

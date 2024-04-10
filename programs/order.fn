@@ -8,7 +8,7 @@ fn checkOrder(a, b, c)
     end
 end
 
-test checkOrder
+test "Check Order"
     ;; Test case 1: Increasing order
     expected = "Increasing"
     result = checkOrder(1, 2, 3)

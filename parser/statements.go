@@ -5,6 +5,36 @@ import (
 	"github.com/pspiagicw/fener/token"
 )
 
+func (p *Parser) parseTestStatement() *ast.TestStatement {
+	stmt := &ast.TestStatement{Token: p.curToken}
+
+	p.advance()
+
+	target := p.parseExpression(LOWEST)
+
+	if target == nil {
+		p.errors = append(p.errors, "Expected target for test statement")
+		return nil
+	}
+
+	t, ok := target.(*ast.String)
+
+	if !ok {
+		p.errors = append(p.errors, "Expected string target for test statement")
+		return nil
+	}
+
+	stmt.Target = t
+
+	stmt.Statements = p.parseBlockStatement()
+
+	if !p.expect(token.END) {
+		return nil
+	}
+
+	return stmt
+}
+
 func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
 	stmt := &ast.ReturnStatement{Token: p.curToken}
 

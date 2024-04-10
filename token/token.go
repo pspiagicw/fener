@@ -55,6 +55,7 @@ const (
 	RETURN   = "RETURN"
 	END      = "END"
 	THEN     = "THEN"
+	TEST     = "TEST"
 
 	AND = "AND"
 	OR  = "OR"

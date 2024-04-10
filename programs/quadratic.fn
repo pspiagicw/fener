@@ -3,9 +3,9 @@ fn calculateDiscriminant(a, b, c)
     return discriminant
 end
 
-test calculateDiscriminant
+test "Calculate Discriminant"
     expected = 1
-    result = calculateDiscriminant(1, -3, 2)
+    result = calculateDiscriminant(1, 3, 2)
     assert(result, expected, "Incorrect discriminant for quadratic equation")
 end
 

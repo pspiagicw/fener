@@ -131,6 +131,8 @@ func (p *Parser) parseStatement() ast.Statement {
 		return nil
 	case token.FUNCTION:
 		return p.parseFunctionStatement()
+	case token.TEST:
+		return p.parseTestStatement()
 	default:
 		return p.parseExpressionStatement()
 	}

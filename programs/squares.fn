@@ -14,12 +14,12 @@ fn sumOfFirstNOddNumbers(n)
     return sum
 end
 
-test sumOfFirstNOddNumbers
-    expected = 25  ;; Sum of first 5 odd numbers: 1 + 3 + 5 + 7 + 9 = 25
+test "Sum of First N Odd Numbers"
+    expected = 25  ;; Sum of first 5 odd numbers: 1 + 3 + 5 + 
     result = sumOfFirstNOddNumbers(5)
     assert(result, expected, "Incorrect sum of first 5 odd numbers")
 
-    expected = 9^2  ;; Sum of first 9 odd numbers: 1 + 3 + ... + 17 + 19 = 81
+    expected = 92  ;; Sum of first 9 odd numbers: 1 + 3 + ... + 17 + 19 = 81
     result = sumOfFirstNOddNumbers(9)
     assert(result, expected, "Incorrect sum of first 9 odd numbers")
 end

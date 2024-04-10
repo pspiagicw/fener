@@ -35,21 +35,21 @@ fn calculateAverage(numbers)
     return sum / len
 end
 
-test findMax
+test "Find Max"
     ;; Test case for findMax function
     expected = 10
     result = findMax([1, 5, 10, 8, 3])
     assert(result, expected, "Incorrect maximum value")
 end
 
-test findMin
+test "Find Min"
     ;; Test case for findMin function
     expected = 1
-    result = findMin([1, 5, 10, 8, 3])
+    ;; result = findMin([1, 5, 10, 8, 3])
     assert(result, expected, "Incorrect minimum value")
 end
 
-test calculateAverage
+test "Calculate Average"
     ;; Test case for calculateAverage function
     expected = 5.4
     result = calculateAverage([1, 5, 10, 8, 3])

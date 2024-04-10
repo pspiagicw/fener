@@ -8,7 +8,7 @@ fn isMagicNumber(n)
     return sum == 1
 end
 
-test isMagicNumber
+test "Magic Number!"
     ;; Test case 1: 19 is a magic number
     expected = true
     result = isMagicNumber(19)
