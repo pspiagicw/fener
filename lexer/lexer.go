@@ -173,6 +173,10 @@ func (l *Lexer) Next() *token.Token {
 		return l.token(token.LPAREN, "(")
 	case ")":
 		return l.token(token.RPAREN, ")")
+	case "[":
+		return l.token(token.LSQUARE, "[")
+	case "]":
+		return l.token(token.RSQUARE, "]")
 	case "+":
 		return l.token(token.PLUS, "+")
 	case "-":

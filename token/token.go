@@ -35,12 +35,12 @@ const (
 	BANG     = "!"
 
 	// Delimiters
-	LPAREN   = "("
-	RPAREN   = ")"
-	LBRACE   = "{"
-	RBRACE   = "}"
-	LBRACKET = "["
-	RBRACKET = "]"
+	LPAREN  = "("
+	RPAREN  = ")"
+	LBRACE  = "{"
+	RBRACE  = "}"
+	LSQUARE = "["
+	RSQUARE = "]"
 
 	// Keywords
 	IF    = "IF"

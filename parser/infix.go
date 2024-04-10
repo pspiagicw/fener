@@ -5,6 +5,22 @@ import (
 	"github.com/pspiagicw/fener/token"
 )
 
+func (p *Parser) parseIndexExpression(left ast.Expression) ast.Expression {
+	expression := &ast.IndexExpression{
+		Token: p.curToken,
+		Left:  left,
+	}
+
+	p.advance()
+
+	expression.Index = p.parseExpression(LOWEST)
+
+	if !p.expect(token.RSQUARE) {
+		return nil
+	}
+
+	return expression
+}
 func (p *Parser) parseCallExpression(left ast.Expression) ast.Expression {
 	expression := &ast.CallExpression{
 		Token:    p.curToken,

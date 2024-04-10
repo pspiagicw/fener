@@ -3,6 +3,20 @@ package lexer
 import "testing"
 import "github.com/pspiagicw/fener/token"
 
+func TestParentheses(t *testing.T) {
+	input := `() []`
+
+	expectedTokens := []token.Token{
+		{Type: token.LPAREN, Value: "("},
+		{Type: token.RPAREN, Value: ")"},
+		{Type: token.LSQUARE, Value: "["},
+		{Type: token.RSQUARE, Value: "]"},
+		{Type: token.EOF, Value: ""},
+	}
+
+	checkTokens(t, expectedTokens, input)
+}
+
 func TestTokenIntegers(t *testing.T) {
 	input := `123 -456 789`
 

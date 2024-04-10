@@ -12,7 +12,7 @@ class className
     end
 end
 
-var = className("pspiagicw"  1)
+var = className("pspiagicw", 1)
 
 print(var.giveName(name))
 

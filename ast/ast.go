@@ -275,3 +275,15 @@ func (ts *TestStatement) String() string {
 	out.WriteString("end\n")
 	return out.String()
 }
+
+type IndexExpression struct {
+	Token *token.Token
+	Left  Expression
+	Index Expression
+}
+
+func (ie *IndexExpression) Name() string    { return "IndexExpression" }
+func (ie *IndexExpression) expressionNode() {}
+func (ie *IndexExpression) String() string {
+	return fmt.Sprintf("%s[%s]", ie.Left.String(), ie.Index.String())
+}

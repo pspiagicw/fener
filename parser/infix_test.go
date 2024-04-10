@@ -8,6 +8,26 @@ import (
 	"github.com/pspiagicw/fener/token"
 )
 
+func TestIndexExpression(t *testing.T) {
+	input := `myArray[1 + 1]`
+
+	expectedTree := []ast.Statement{
+		&ast.ExpressionStatement{
+			Expression: &ast.IndexExpression{
+				Left: &ast.Identifier{Value: "myArray", Token: &token.Token{Type: token.IDENT, Value: "myArray", Line: 0}},
+				Index: &ast.InfixExpression{
+					Left:     &ast.Integer{Value: 1, Token: &token.Token{Type: token.INT, Value: "1", Line: 0}},
+					Operator: token.PLUS,
+					Right:    &ast.Integer{Value: 1, Token: &token.Token{Type: token.INT, Value: "1", Line: 0}},
+				},
+			},
+		},
+	}
+
+	checkTree(t, input, expectedTree)
+
+}
+
 func TestBooleanParser(t *testing.T) {
 	input := `
     true && true
@@ -274,6 +294,62 @@ func TestParserInfixTable(t *testing.T) {
 			"2 / (5 + 5)",
 			"(2 / (5 + 5))",
 		},
+		{
+			"true",
+			"true",
+		},
+		{
+			"false",
+			"false",
+		},
+		{
+			"3 > 5 == true",
+			"((3 > 5) == true)",
+		},
+		{
+			"3 > 5 == false",
+			"((3 > 5) == false)",
+		},
+		{
+			"1 + (2 + 3) + 4",
+			"((1 + (2 + 3)) + 4)",
+		},
+		{
+			"(5 + 5) * 2",
+			"((5 + 5) * 2)",
+		},
+		{
+			"2 / (5 + 5)",
+			"(2 / (5 + 5))",
+		},
+		// {
+		// 	"-(5 + 5)",
+		// 	"(-(5 + 5))",
+		// },
+		// {
+		// 	"!(true == true)",
+		// 	"(!(true == true))",
+		// },
+		{
+			"a + add(b * c) + d",
+			"((a + add((b * c))) + d)",
+		},
+		{
+			"add(a, b, 1, 2 * 3, 4 + 5, add(6, 7 * 8))",
+			"add(a, b, 1, (2 * 3), (4 + 5), add(6, (7 * 8)))",
+		},
+		{
+			"add(a + b + c * d / f + g)",
+			"add((((a + b) + ((c * d) / f)) + g))",
+		},
+		// {
+		// 	"a * [1, 2, 3, 4][b * c] * d",
+		// 	"((a * ([1, 2, 3, 4][(b * c)])) * d)",
+		// },
+		// {
+		// 	"add(a * b[2], b[1], 2 * [1, 2][1])",
+		// 	"add((a * (b[2])), (b[1]), (2 * ([1, 2][1])))",
+		// },
 	}
 
 	for _, tt := range tests {

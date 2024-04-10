@@ -1,15 +1,19 @@
 fn printFloydsTriangle(n)
     number = 1
-    for i = 1 to n do
-        for j = 1 to i then
+    i = 1
+    while i < n then
+        j = 1
+        while j < i then
             print(number)
             number = number + 1
+            j = j + 1
         end
         print("\n")
+        i = i + 1
     end
 end
 
-test printFloydsTriangle
+test "Test Floyd's Triangle"
     expectedOutput = "1\n2 3\n4 5 6\n"
     capturedOutput = capture(printFloydsTriangle(3))
     assert(capturedOutput, expectedOutput, "Incorrect output for Floyd's triangle")

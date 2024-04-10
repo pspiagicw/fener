@@ -19,6 +19,7 @@ const (
 	BOOLEAN
 	ASSIGNMENT
 	CALL
+	INDEX
 )
 
 var precedences = map[token.TokenType]int{
@@ -39,6 +40,7 @@ var precedences = map[token.TokenType]int{
 	token.OR:       BOOLEAN,
 	token.BITAND:   BOOLEAN,
 	token.BITOR:    BOOLEAN,
+	token.LSQUARE:  INDEX,
 }
 
 type infixParseFn func(ast.Expression) ast.Expression
@@ -92,6 +94,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerInfix(token.OR, p.parseInfixExpression)
 	p.registerInfix(token.BITAND, p.parseInfixExpression)
 	p.registerInfix(token.BITOR, p.parseInfixExpression)
+	p.registerInfix(token.LSQUARE, p.parseIndexExpression)
 
 	p.advance()
 	p.advance()
