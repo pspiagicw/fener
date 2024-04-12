@@ -6,6 +6,13 @@ import (
 	"github.com/pspiagicw/fener/token"
 )
 
+type lexerState int
+
+const (
+	lexerStateNormal lexerState = iota
+	lexerStateExec
+)
+
 type Lexer struct {
 	input        string
 	position     int    // current position in input (points to current char)
@@ -14,6 +21,9 @@ type Lexer struct {
 	eof          bool   // signals end of file
 	line         int    // current line number
 	err          error  // errors encountered during lexing
+
+	currentState lexerState
+	currentDepth int
 }
 
 func New(input string) *Lexer {
@@ -22,6 +32,9 @@ func New(input string) *Lexer {
 		position:     -1,
 		readPosition: 0,
 		err:          nil,
+
+		currentState: lexerStateNormal,
+		currentDepth: 0,
 	}
 	return l
 }
@@ -145,6 +158,7 @@ func (l *Lexer) comment() string {
 }
 
 func (l *Lexer) Next() *token.Token {
+
 	l.advance()
 	l.whitespace()
 

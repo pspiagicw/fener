@@ -126,7 +126,11 @@ func (p *Parser) parseBlockStatement() *ast.BlockStatement {
 	b.Statements = []ast.Statement{}
 
 	for !p.curTokenIs(token.END) && !p.curTokenIs(token.EOF) && !p.curTokenIs(token.ELSE) && !p.curTokenIs(token.ELIF) {
-		b.Statements = append(b.Statements, p.parseStatement())
+		statement := p.parseStatement()
+
+		if statement != nil {
+			b.Statements = append(b.Statements, statement)
+		}
 	}
 
 	return b

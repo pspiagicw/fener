@@ -8,6 +8,7 @@ import (
 
 	"github.com/pspiagicw/fener/argparse"
 	"github.com/pspiagicw/fener/ast"
+	"github.com/pspiagicw/fener/eval"
 	"github.com/pspiagicw/fener/help"
 	"github.com/pspiagicw/fener/lexer"
 	"github.com/pspiagicw/fener/parser"
@@ -44,7 +45,11 @@ func Handle(opts *argparse.Opts) {
 			printAST(ast)
 		}
 
-		fmt.Println(ast)
+		e := eval.New(func(err error) {
+			goreland.LogError(err.Error())
+		})
+
+		fmt.Println(e.Eval(ast))
 	}
 }
 func parseLine(line string) (*ast.Program, []string) {

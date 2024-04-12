@@ -76,4 +76,8 @@ const (
 
 	DOT   = "."
 	COMMA = ","
+
+	ESTART  = "ESTART"
+	EEND    = "EEND"
+	EMIDDLE = "EMID"
 )

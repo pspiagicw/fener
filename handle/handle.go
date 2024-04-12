@@ -2,6 +2,7 @@ package handle
 
 import (
 	"github.com/pspiagicw/fener/argparse"
+	"github.com/pspiagicw/fener/format"
 	"github.com/pspiagicw/fener/help"
 	"github.com/pspiagicw/fener/repl"
 	"github.com/pspiagicw/fener/run"
@@ -17,6 +18,7 @@ var handles = map[string]func(*argparse.Opts){
 	"help": func(opts *argparse.Opts) {
 		help.Handle(opts.Args, opts.Version)
 	},
+	"format": format.Handle,
 }
 
 func Handle(opts *argparse.Opts) {

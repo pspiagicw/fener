@@ -1,37 +1,22 @@
-package run
+package format
 
 import (
-	"flag"
+	"fmt"
 	"os"
+	"strings"
 
 	"github.com/pspiagicw/fener/argparse"
 	"github.com/pspiagicw/fener/ast"
-	"github.com/pspiagicw/fener/eval"
-	"github.com/pspiagicw/fener/help"
 	"github.com/pspiagicw/fener/lexer"
 	"github.com/pspiagicw/fener/parser"
 	"github.com/pspiagicw/goreland"
-	"github.com/sanity-io/litter"
 )
-
-func parseRunArgs(opts *argparse.Opts) {
-
-	flag := flag.NewFlagSet("fener run", flag.ExitOnError)
-
-	flag.Usage = help.Repl
-
-	flag.BoolVar(&opts.PrintAST, "print-ast", false, "Print the AST of the program")
-
-	flag.Parse(opts.Args)
-
-	opts.Args = flag.Args()
-}
 
 func Handle(opts *argparse.Opts) {
 
-	parseRunArgs(opts)
-
 	for _, arg := range opts.Args {
+		// Format the file
+
 		ast, errors := parseFile(arg)
 
 		if len(errors) > 0 {
@@ -41,11 +26,9 @@ func Handle(opts *argparse.Opts) {
 			goreland.LogFatal("Parsing failed!!!")
 		}
 
-		e := eval.New(func(err error) {
-			goreland.LogFatal(err.Error())
-		})
+		output := format(ast)
 
-		e.Eval(ast)
+		fmt.Println(output)
 	}
 }
 func parseFile(filename string) (*ast.Program, []string) {
@@ -62,6 +45,11 @@ func parseFile(filename string) (*ast.Program, []string) {
 	return program, p.Errors()
 
 }
-func printAST(program *ast.Program) {
-	litter.Dump(program)
+func format(program *ast.Program) string {
+	var out strings.Builder
+	for _, s := range program.Statements {
+		out.WriteString(s.String())
+		out.WriteString("\n")
+	}
+	return out.String()
 }

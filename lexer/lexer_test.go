@@ -3,6 +3,55 @@ package lexer
 import "testing"
 import "github.com/pspiagicw/fener/token"
 
+func TestExecWithExpression(t *testing.T) {
+	input := `$(echo {1 + 2})`
+
+	t.Skip()
+
+	expectedTokens := []token.Token{
+		{Type: token.ESTART, Value: "$("},
+		{Type: token.EMIDDLE, Value: "e"},
+		{Type: token.EMIDDLE, Value: "c"},
+		{Type: token.EMIDDLE, Value: "h"},
+		{Type: token.EMIDDLE, Value: "o"},
+		{Type: token.EMIDDLE, Value: " "},
+	}
+
+	checkTokens(t, expectedTokens, input)
+}
+
+func TestExecString(t *testing.T) {
+
+	t.Skip()
+
+	input := `$(ls -l)`
+
+	expectedTokens := []token.Token{
+		{Type: token.ESTART, Value: "$("},
+		{Type: token.EMIDDLE, Value: "l"},
+		{Type: token.EMIDDLE, Value: "s"},
+		{Type: token.EMIDDLE, Value: " "},
+		{Type: token.EMIDDLE, Value: "-"},
+		{Type: token.EMIDDLE, Value: "l"},
+		{Type: token.EEND, Value: ")"},
+	}
+
+	checkTokens(t, expectedTokens, input)
+}
+
+func TestExecStringEmpty(t *testing.T) {
+	input := `$()`
+
+	t.Skip()
+
+	expectedTokens := []token.Token{
+		{Type: token.ESTART, Value: "$("},
+		{Type: token.EEND, Value: ")"},
+	}
+
+	checkTokens(t, expectedTokens, input)
+}
+
 func TestParentheses(t *testing.T) {
 	input := `() []`
 
