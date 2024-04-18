@@ -17,7 +17,53 @@ func TestEval(t *testing.T) {
 	}{
 		{"5", 5},
 		{`"some string"`, "some string"},
-		// {"-10", -10},
+		{"-10", -10},
+		{"true", true},
+		{"false", false},
+		{"!true", false},
+		{"!false", true},
+		{"!!!false", true},
+		{"!10", false},
+		{"!true", false},
+		{"!false", true},
+		{"!5", false},
+		{"!!true", true},
+		{"!!false", false},
+		{"!!5", true},
+		{"true", true},
+		{"false", false},
+		{"1 < 2", true},
+		{"1 > 2", false},
+		{"1 < 1", false},
+		{"1 > 1", false},
+		{"1 == 1", true},
+		{"1 != 1", false},
+		{"1 == 2", false},
+		{"1 != 2", true},
+		{"true == true", true},
+		{"false == false", true},
+		{"true == false", false},
+		{"true != false", true},
+		{"false != true", true},
+		{"(1 < 2) == true", true},
+		{"(1 < 2) == false", false},
+		{"(1 > 2) == true", false},
+		{"(1 > 2) == false", true},
+		{"5", 5},
+		{"15", 15},
+		{"-5", -5},
+		{"-10", -10},
+		{"5 + 5 + 5 + 5 - 10", 10},
+		{"2 * 2 * 2 * 2 * 2", 32},
+		{"-50 + 100 + -50", 0},
+		{"5 * 2 + 10", 20},
+		{"5 + 2 * 10", 25},
+		{"20 + 2 * -10", 0},
+		{"50 / 2 * 2 + 10", 60},
+		{"2 * (5 + 10)", 30},
+		{"3 * 3 * 3 + 10", 37},
+		{"3 * (3 * 3) + 10", 37},
+		{"(5 + 10 * 2 + 15 / 3) * 2 + -10", 50},
 	}
 
 	for _, tt := range table {
@@ -54,6 +100,8 @@ func checkEval(t *testing.T, input string, expected interface{}) {
 		checkIntegerObject(t, value, int64(expected))
 	case string:
 		checkStringObject(t, value, expected)
+	case bool:
+		checkBooleanObject(t, value, expected)
 	default:
 		t.Fatalf("Unknown type `%T` for testing", expected)
 	}
@@ -92,4 +140,17 @@ func parse(input string) (*ast.Program, []string) {
 	p := parser.New(l)
 
 	return p.Parse(), p.Errors()
+}
+func checkBooleanObject(t *testing.T, obj object.Object, expected bool) {
+	t.Helper()
+
+	result, ok := obj.(*object.Boolean)
+
+	if !ok {
+		t.Fatalf("Object is not a Boolean. Got: %T", obj)
+	}
+
+	if result.Value != expected {
+		t.Fatalf("Expected %t, got %t", expected, result.Value)
+	}
 }
