@@ -30,3 +30,11 @@ type String struct {
 
 func (s *String) Type() ObjectType { return s.ObjType }
 func (s *String) String() string   { return s.Value }
+
+type Boolean struct {
+	Value   bool
+	ObjType ObjectType
+}
+
+func (b *Boolean) Type() ObjectType { return b.ObjType }
+func (b *Boolean) String() string   { return fmt.Sprintf("%t", b.Value) }

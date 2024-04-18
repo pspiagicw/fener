@@ -22,3 +22,4 @@ print(var.giveName(name))
 ;; var.name = "something else"
 
 ;; Declare a setter or some other method for that
+

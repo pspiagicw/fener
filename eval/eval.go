@@ -5,6 +5,7 @@ import (
 
 	"github.com/pspiagicw/fener/ast"
 	"github.com/pspiagicw/fener/object"
+	"github.com/pspiagicw/fener/token"
 )
 
 type Evaluator struct {
@@ -26,6 +27,10 @@ func (e *Evaluator) Error(message string, args ...interface{}) {
 
 func (e *Evaluator) Eval(node ast.Node) object.Object {
 	switch node := node.(type) {
+	case *ast.PrefixExpression:
+		return e.evalPrefixExpression(node)
+	case *ast.Boolean:
+		return evalBoolean(node)
 	case *ast.String:
 		return evalString(node)
 	case *ast.Integer:
@@ -46,6 +51,9 @@ func evalString(node *ast.String) object.Object {
 func evalInteger(node *ast.Integer) object.Object {
 	return &object.Integer{Value: node.Value}
 }
+func evalBoolean(node *ast.Boolean) object.Object {
+	return &object.Boolean{Value: node.Value}
+}
 
 func (e *Evaluator) evalProgram(node *ast.Program) object.Object {
 	var result object.Object
@@ -55,4 +63,46 @@ func (e *Evaluator) evalProgram(node *ast.Program) object.Object {
 	}
 
 	return result
+}
+func (e *Evaluator) evalPrefixExpression(node *ast.PrefixExpression) object.Object {
+
+	right := e.Eval(node.Right)
+
+	switch node.Operator {
+	case token.MINUS:
+		number := toInteger(right)
+
+		if number == nil {
+			e.Error("Can't negate expression %T", right)
+			return nil
+		}
+
+		return &object.Integer{Value: -number.Value}
+	case token.BANG:
+		return &object.Boolean{Value: !isTruthy(right)}
+	default:
+		e.Error("Unknown prefix operator: %s", node.Operator)
+		return nil
+	}
+}
+func toInteger(obj object.Object) *object.Integer {
+
+	i, ok := obj.(*object.Integer)
+
+	if !ok {
+		return nil
+	}
+
+	return i
+}
+
+func isTruthy(obj object.Object) bool {
+	switch obj := obj.(type) {
+	case *object.Integer:
+		return obj.Value != 0
+	case *object.Boolean:
+		return obj.Value
+	default:
+		return false
+	}
 }
