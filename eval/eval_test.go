@@ -9,11 +9,21 @@ import (
 	"github.com/pspiagicw/fener/parser"
 )
 
+type testCase struct {
+	input string
+	value interface{}
+}
+
+func TestAssignmentEval(t *testing.T) {
+	table := []testCase{
+		{"a = 5 a", 5},
+	}
+
+	runTableTests(t, table)
+}
+
 func TestInfixIf(t *testing.T) {
-	table := []struct {
-		input string
-		value interface{}
-	}{
+	table := []testCase{
 		{"if true then 5 end", 5},
 		{"if 2 == 2 then 5 end", 5},
 		{"if 2 == 3 then 5 end", nil},
@@ -21,21 +31,13 @@ func TestInfixIf(t *testing.T) {
 		{"if 2 != 2 then elif 2 == 3 then 7 else 9 end", 9},
 	}
 
-	for _, tt := range table {
-		t.Run(tt.input, func(t *testing.T) {
+	runTableTests(t, table)
 
-			checkEval(t, tt.input, tt.value)
-
-		})
-	}
 }
 
 func TestInfixEval(t *testing.T) {
 
-	table := []struct {
-		input string
-		value interface{}
-	}{
+	table := []testCase{
 		{"5", 5},
 		{`"some string"`, "some string"},
 		{"-10", -10},
@@ -87,13 +89,7 @@ func TestInfixEval(t *testing.T) {
 		{"(5 + 10 * 2 + 15 / 3) * 2 + -10", 50},
 	}
 
-	for _, tt := range table {
-		t.Run(tt.input, func(t *testing.T) {
-
-			checkEval(t, tt.input, tt.value)
-
-		})
-	}
+	runTableTests(t, table)
 }
 
 func checkEval(t *testing.T, input string, expected interface{}) {
@@ -182,5 +178,14 @@ func checkBooleanObject(t *testing.T, obj object.Object, expected bool) {
 
 	if result.Value != expected {
 		t.Fatalf("Expected %t, got %t", expected, result.Value)
+	}
+}
+func runTableTests(t *testing.T, table []testCase) {
+	for _, tt := range table {
+		t.Run(tt.input, func(t *testing.T) {
+
+			checkEval(t, tt.input, tt.value)
+
+		})
 	}
 }
