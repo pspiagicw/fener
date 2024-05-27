@@ -9,7 +9,7 @@ command = "go build ."
 
 
 [task.test]
-command = "go test ./..."
+command = "go test ./... -test.fullpath"
 depends = [
     "format"
 ]
@@ -17,3 +17,6 @@ depends = [
 [task.format]
 command = "go fmt ./..."
 
+[task.run]
+command = "./fener repl"
+depends = ["build"]

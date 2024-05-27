@@ -3,6 +3,7 @@ module github.com/pspiagicw/fener
 go 1.21.4
 
 require (
+	github.com/chzyer/readline v1.5.1
 	github.com/davecgh/go-spew v0.0.0-20161028175848-04cdfd42973b
 	github.com/pspiagicw/goreland v0.0.0-20231129143657-4b9ff8ac7ad5
 	github.com/pspiagicw/pelp v0.0.0-20240318161701-7448ea2e376e

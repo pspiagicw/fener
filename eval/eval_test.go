@@ -9,7 +9,28 @@ import (
 	"github.com/pspiagicw/fener/parser"
 )
 
-func TestEval(t *testing.T) {
+func TestInfixIf(t *testing.T) {
+	table := []struct {
+		input string
+		value interface{}
+	}{
+		{"if true then 5 end", 5},
+		{"if 2 == 2 then 5 end", 5},
+		{"if 2 == 3 then 5 end", nil},
+		{"if 2 != 2 then 5 else 2 end", 2},
+		{"if 2 != 2 then elif 2 == 3 then 7 else 9 end", 9},
+	}
+
+	for _, tt := range table {
+		t.Run(tt.input, func(t *testing.T) {
+
+			checkEval(t, tt.input, tt.value)
+
+		})
+	}
+}
+
+func TestInfixEval(t *testing.T) {
 
 	table := []struct {
 		input string
@@ -102,10 +123,19 @@ func checkEval(t *testing.T, input string, expected interface{}) {
 		checkStringObject(t, value, expected)
 	case bool:
 		checkBooleanObject(t, value, expected)
+	case nil:
+		checkNullObject(t, value)
 	default:
 		t.Fatalf("Unknown type `%T` for testing", expected)
 	}
 
+}
+func checkNullObject(t *testing.T, obj object.Object) {
+	t.Helper()
+
+	if obj.Type() != object.NULL_OBJ {
+		t.Fatalf("Expected NULL, got %T", obj)
+	}
 }
 func checkIntegerObject(t *testing.T, obj object.Object, expected int64) {
 	t.Helper()

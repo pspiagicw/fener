@@ -4,8 +4,9 @@ import (
 	"bufio"
 	"flag"
 	"fmt"
-	"os"
+	"strings"
 
+	"github.com/chzyer/readline"
 	"github.com/pspiagicw/fener/argparse"
 	"github.com/pspiagicw/fener/ast"
 	"github.com/pspiagicw/fener/eval"
@@ -30,10 +31,12 @@ func Handle(opts *argparse.Opts) {
 
 	parseReplArgs(opts)
 
-	reader := bufio.NewReader(os.Stdin)
+	rl := initREPL()
+	defer rl.Close()
 
 	for true {
-		line := getLine(reader)
+
+		line := getInput(rl)
 
 		ast, errors := parseLine(line)
 
@@ -73,4 +76,28 @@ func getLine(rw *bufio.Reader) string {
 }
 func printAST(program *ast.Program) {
 	litter.Dump(program)
+}
+
+func getInput(r *readline.Instance) string {
+	line, err := r.Readline()
+	if err != nil {
+		goreland.LogFatal("Error reading input from prompt: %v", err)
+	}
+	line = strings.TrimSpace(line)
+
+	return line
+}
+
+func initREPL() *readline.Instance {
+	r, err := readline.NewEx(&readline.Config{
+		Prompt:          ">>> ",
+		HistoryFile:     "/tmp/readline.tmp",
+		InterruptPrompt: "^D",
+	})
+
+	if err != nil {
+		goreland.LogFatal("Error initalizing readline: %v", err)
+	}
+
+	return r
 }
