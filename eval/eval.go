@@ -25,16 +25,20 @@ func (e *Evaluator) Error(message string, args ...interface{}) {
 	e.ErrorHandler(err)
 }
 
-func (e *Evaluator) Eval(node ast.Node) object.Object {
+func (e *Evaluator) Eval(node ast.Node, env *object.Environment) object.Object {
 	switch node := node.(type) {
+	case *ast.Identifier:
+		return e.evalIdentifier(node, env)
+	case *ast.AssignmentExpression:
+		return e.evalAssignmentExpression(node, env)
 	case *ast.BlockStatement:
-		return e.EvalBlockStatement(node)
+		return e.evalBlockStatement(node, env)
 	case *ast.IfExpression:
-		return e.evalIfExpression(node)
+		return e.evalIfExpression(node, env)
 	case *ast.InfixExpression:
-		return e.evalInfixExpression(node)
+		return e.evalInfixExpression(node, env)
 	case *ast.PrefixExpression:
-		return e.evalPrefixExpression(node)
+		return e.evalPrefixExpression(node, env)
 	case *ast.Boolean:
 		return evalBoolean(node)
 	case *ast.String:
@@ -42,32 +46,49 @@ func (e *Evaluator) Eval(node ast.Node) object.Object {
 	case *ast.Integer:
 		return evalInteger(node)
 	case *ast.ExpressionStatement:
-		return e.Eval(node.Expression)
+		return e.Eval(node.Expression, env)
 	case *ast.Program:
-		return e.evalProgram(node)
+		return e.evalProgram(node, env)
 	default:
 		e.Error("Unknown node type: %T", node)
 		return &object.Null{}
 	}
 }
-func (e *Evaluator) EvalBlockStatement(node *ast.BlockStatement) object.Object {
+func (e *Evaluator) evalIdentifier(node *ast.Identifier, env *object.Environment) object.Object {
+	value := env.Get(node.Value)
+
+	if value == nil {
+		e.Error("Identifier not found: %s", node.Value)
+		return &object.Null{}
+	}
+
+	return value
+}
+func (e *Evaluator) evalAssignmentExpression(node *ast.AssignmentExpression, env *object.Environment) object.Object {
+	value := e.Eval(node.Value, env)
+
+	env.Set(node.Target.Value, value)
+
+	return value
+}
+func (e *Evaluator) evalBlockStatement(node *ast.BlockStatement, env *object.Environment) object.Object {
 	var result object.Object
 
 	result = &object.Null{}
 
 	for _, statement := range node.Statements {
-		result = e.Eval(statement)
+		result = e.Eval(statement, env)
 	}
 
 	return result
 }
-func (e *Evaluator) evalIfExpression(node *ast.IfExpression) object.Object {
-	condition := e.Eval(node.Condition)
+func (e *Evaluator) evalIfExpression(node *ast.IfExpression, env *object.Environment) object.Object {
+	condition := e.Eval(node.Condition, env)
 
 	if isTruthy(condition) {
-		return e.Eval(node.Consequence)
+		return e.Eval(node.Consequence, env)
 	} else if node.Alternative != nil {
-		return e.Eval(node.Alternative)
+		return e.Eval(node.Alternative, env)
 	}
 	return &object.Null{}
 }
@@ -82,22 +103,22 @@ func evalBoolean(node *ast.Boolean) object.Object {
 	return &object.Boolean{Value: node.Value}
 }
 
-func (e *Evaluator) evalProgram(node *ast.Program) object.Object {
+func (e *Evaluator) evalProgram(node *ast.Program, env *object.Environment) object.Object {
 	var result object.Object
 
 	for _, statement := range node.Statements {
-		result = e.Eval(statement)
+		result = e.Eval(statement, env)
 	}
 
 	return result
 }
 
-func (e *Evaluator) evalInfixExpression(node *ast.InfixExpression) object.Object {
+func (e *Evaluator) evalInfixExpression(node *ast.InfixExpression, env *object.Environment) object.Object {
 	switch node.Operator {
 	case token.MINUS, token.MULTIPLY, token.DIVIDE, token.PLUS:
-		return e.evalInfixArithmetic(node)
+		return e.evalInfixArithmetic(node, env)
 	case token.EQ, token.NOT_EQ, token.GT, token.LT:
-		return e.evalInfixComparison(node)
+		return e.evalInfixComparison(node, env)
 	}
 
 	return &object.Null{}
@@ -108,9 +129,9 @@ func isEqual(left object.Object, right object.Object) bool {
 	}
 	return false
 }
-func (e *Evaluator) evalInfixComparison(node *ast.InfixExpression) object.Object {
-	left := e.Eval(node.Left)
-	right := e.Eval(node.Right)
+func (e *Evaluator) evalInfixComparison(node *ast.InfixExpression, env *object.Environment) object.Object {
+	left := e.Eval(node.Left, env)
+	right := e.Eval(node.Right, env)
 
 	switch node.Operator {
 	case token.EQ:
@@ -147,12 +168,12 @@ func (e *Evaluator) evalLessThan(left, right object.Object) object.Object {
 	}
 	return &object.Boolean{Value: leftInt.Value < rightInt.Value}
 }
-func (e *Evaluator) evalInfixArithmetic(node *ast.InfixExpression) object.Object {
-	left := toInteger(e.Eval(node.Left))
+func (e *Evaluator) evalInfixArithmetic(node *ast.InfixExpression, env *object.Environment) object.Object {
+	left := toInteger(e.Eval(node.Left, env))
 	if left == nil {
 		e.Error("Can't perform infix operation on left expression %T", node.Left)
 	}
-	right := toInteger(e.Eval(node.Right))
+	right := toInteger(e.Eval(node.Right, env))
 	if right == nil {
 		e.Error("Can't perform infx operation on right expression %T", node.Right)
 	}
@@ -182,9 +203,9 @@ func (e *Evaluator) negateValue(value object.Object) object.Object {
 	return &object.Integer{Value: -number.Value}
 
 }
-func (e *Evaluator) evalPrefixExpression(node *ast.PrefixExpression) object.Object {
+func (e *Evaluator) evalPrefixExpression(node *ast.PrefixExpression, env *object.Environment) object.Object {
 
-	right := e.Eval(node.Right)
+	right := e.Eval(node.Right, env)
 
 	switch node.Operator {
 	case token.MINUS:

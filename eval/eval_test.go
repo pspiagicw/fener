@@ -17,6 +17,7 @@ type testCase struct {
 func TestAssignmentEval(t *testing.T) {
 	table := []testCase{
 		{"a = 5 a", 5},
+		{"a = 5 a", 5},
 	}
 
 	runTableTests(t, table)
@@ -105,12 +106,13 @@ func checkEval(t *testing.T, input string, expected interface{}) {
 
 		t.Fatalf("Parsing failed")
 	}
+	env := object.NewEnvironment()
 
 	e := New(func(err error) {
 		t.Fatalf(err.Error())
 	})
 
-	value := e.Eval(ast)
+	value := e.Eval(ast, env)
 
 	switch expected := expected.(type) {
 	case int:

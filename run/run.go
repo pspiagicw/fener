@@ -9,6 +9,7 @@ import (
 	"github.com/pspiagicw/fener/eval"
 	"github.com/pspiagicw/fener/help"
 	"github.com/pspiagicw/fener/lexer"
+	"github.com/pspiagicw/fener/object"
 	"github.com/pspiagicw/fener/parser"
 	"github.com/pspiagicw/goreland"
 	"github.com/sanity-io/litter"
@@ -32,6 +33,7 @@ func Handle(opts *argparse.Opts) {
 	parseRunArgs(opts)
 
 	for _, arg := range opts.Args {
+		env := object.NewEnvironment()
 		ast, errors := parseFile(arg)
 
 		if len(errors) > 0 {
@@ -45,7 +47,7 @@ func Handle(opts *argparse.Opts) {
 			goreland.LogFatal(err.Error())
 		})
 
-		e.Eval(ast)
+		e.Eval(ast, env)
 	}
 }
 func parseFile(filename string) (*ast.Program, []string) {

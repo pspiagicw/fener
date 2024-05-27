@@ -12,6 +12,7 @@ import (
 	"github.com/pspiagicw/fener/eval"
 	"github.com/pspiagicw/fener/help"
 	"github.com/pspiagicw/fener/lexer"
+	"github.com/pspiagicw/fener/object"
 	"github.com/pspiagicw/fener/parser"
 	"github.com/pspiagicw/goreland"
 	"github.com/sanity-io/litter"
@@ -33,6 +34,7 @@ func Handle(opts *argparse.Opts) {
 
 	rl := initREPL()
 	defer rl.Close()
+	env := object.NewEnvironment()
 
 	for true {
 
@@ -52,7 +54,7 @@ func Handle(opts *argparse.Opts) {
 			goreland.LogError(err.Error())
 		})
 
-		fmt.Println(e.Eval(ast))
+		fmt.Println(e.Eval(ast, env))
 	}
 }
 func parseLine(line string) (*ast.Program, []string) {
