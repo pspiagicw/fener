@@ -27,6 +27,8 @@ func (e *Evaluator) Error(message string, args ...interface{}) {
 
 func (e *Evaluator) Eval(node ast.Node) object.Object {
 	switch node := node.(type) {
+	case *ast.InfixExpression:
+		return e.evalInfixExpression(node)
 	case *ast.PrefixExpression:
 		return e.evalPrefixExpression(node)
 	case *ast.Boolean:
@@ -63,6 +65,39 @@ func (e *Evaluator) evalProgram(node *ast.Program) object.Object {
 	}
 
 	return result
+}
+
+func (e *Evaluator) evalInfixExpression(node *ast.InfixExpression) object.Object {
+	switch node.Operator {
+	case token.MINUS, token.MULTIPLY, token.DIVIDE, token.PLUS:
+		return e.evalInfixArithmetic(node)
+	}
+
+	return nil
+}
+func (e *Evaluator) evalInfixArithmetic(node *ast.InfixExpression) object.Object {
+	left := toInteger(e.Eval(node.Left))
+	if left == nil {
+		e.Error("Can't perform infix operation on left expression %T", node.Left)
+	}
+	right := toInteger(e.Eval(node.Right))
+	if right == nil {
+		e.Error("Can't perform infx operation on right expression %T", node.Right)
+	}
+
+	switch node.Operator {
+	case token.PLUS:
+		return &object.Integer{Value: left.Value + right.Value}
+	case token.MINUS:
+		return &object.Integer{Value: left.Value - right.Value}
+	case token.MULTIPLY:
+		return &object.Integer{Value: left.Value * right.Value}
+	case token.DIVIDE:
+		return &object.Integer{Value: left.Value / right.Value}
+	default:
+		e.Error("Unknown arithmetic infix operator: %s", node.Operator)
+		return nil
+	}
 }
 func (e *Evaluator) evalPrefixExpression(node *ast.PrefixExpression) object.Object {
 
