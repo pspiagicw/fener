@@ -90,6 +90,9 @@ func (e *Evaluator) evalBlockStatement(node *ast.BlockStatement, env *object.Env
 
 	for _, statement := range node.Statements {
 		result = e.Eval(statement, env)
+		if result.Type() == object.RETURN_OBJ {
+			return result
+		}
 	}
 
 	return result
@@ -332,7 +335,15 @@ func (e *Evaluator) evalFunctionCall(fn *object.Function, args []object.Object) 
 
 	e.applyArguments(fn.Arguments, args, newEnv)
 
-	return e.Eval(fn.Body, newEnv)
+	evaluated := e.Eval(fn.Body, newEnv)
+
+	return unwrapReturnValue(evaluated)
+}
+func unwrapReturnValue(obj object.Object) object.Object {
+	if returnValue, ok := obj.(*object.Return); ok {
+		return returnValue.Value
+	}
+	return obj
 }
 func (e *Evaluator) applyArguments(params []string, args []object.Object, env *object.Environment) {
 
