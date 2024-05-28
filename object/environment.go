@@ -6,10 +6,12 @@ type Environment struct {
 }
 
 func NewEnvironment() *Environment {
-	return &Environment{
+	env := &Environment{
 		Outer:    nil,
 		Bindings: make(map[string]Object),
 	}
+	initBuiltins(env)
+	return env
 }
 func (e *Environment) Set(name string, value Object) {
 	e.Bindings[name] = value

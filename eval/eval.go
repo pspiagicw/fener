@@ -66,23 +66,40 @@ func newEnclosedEnvironment(outer *object.Environment) *object.Environment {
 
 	return env
 }
+func (e *Evaluator) evalArgs(args []ast.Expression, env *object.Environment) []object.Object {
+	var evaluated []object.Object
+
+	for _, arg := range args {
+		evaluated = append(evaluated, e.Eval(arg, env))
+	}
+
+	return evaluated
+}
 func (e *Evaluator) evalCallExpression(node *ast.CallExpression, env *object.Environment) object.Object {
 	ex := e.Eval(node.Function, env)
+	args := e.evalArgs(node.Arguments, env)
 
-	fn := toFunction(ex)
-
-	if fn == nil {
+	switch ex := ex.(type) {
+	case *object.Function:
+		return e.evalFunctionCall(ex, args)
+	case *object.Builtin:
+		return e.evalBuiltinCall(ex, args)
+	default:
 		e.Error("Can't call expression %T", ex)
 		return &object.Null{}
 	}
-
+}
+func (e *Evaluator) evalBuiltinCall(fn *object.Builtin, args []object.Object) object.Object {
+	return fn.Fn(args...)
+}
+func (e *Evaluator) evalFunctionCall(fn *object.Function, args []object.Object) object.Object {
 	newEnv := newEnclosedEnvironment(fn.Env)
 
-	e.applyArguments(fn.Arguments, node.Arguments, newEnv)
+	e.applyArguments(fn.Arguments, args, newEnv)
 
 	return e.Eval(fn.Body, newEnv)
 }
-func (e *Evaluator) applyArguments(params []string, args []ast.Expression, env *object.Environment) {
+func (e *Evaluator) applyArguments(params []string, args []object.Object, env *object.Environment) {
 
 	if len(params) != len(args) {
 		e.Error("Expected %d arguments, got %d", len(params), len(args))
@@ -90,7 +107,7 @@ func (e *Evaluator) applyArguments(params []string, args []ast.Expression, env *
 	}
 
 	for i, arg := range args {
-		env.Set(params[i], e.Eval(arg, env))
+		env.Set(params[i], arg)
 	}
 }
 func toFunction(node object.Object) *object.Function {

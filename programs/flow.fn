@@ -20,11 +20,11 @@ if number == 2 then
 elif number == 3 then
     print("Number is 3")
 else
-    printf("Number is not 2 or 3")
+    print("Number is not 2 or 3")
 end
 
-while true then
-    print("Infinity!")
-end
+;; while true then
+;;     print("Infinity!")
+;; end
 
 

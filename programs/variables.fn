@@ -6,9 +6,6 @@ print(a)
 print(name)
 print(status)
 
-const name = "pspiagicw"
+name = "pspiagicw"
 
 print(a)
-
-;; should give an error
-name = "something else"

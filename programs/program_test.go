@@ -8,8 +8,7 @@ import (
 
 func TestPrograms(t *testing.T) {
 
-	t.Skip()
-
+	// t.Skipf("Skipping program-based test")
 	files, err := filepath.Glob("*.fn")
 
 	if err != nil {
