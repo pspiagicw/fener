@@ -24,9 +24,97 @@ func (e *Evaluator) Error(message string, args ...interface{}) {
 
 	e.ErrorHandler(err)
 }
+func getArgumentNames(args []*ast.Identifier) []string {
+	var names []string
+
+	for _, arg := range args {
+		names = append(names, arg.Value)
+	}
+
+	return names
+}
+func (e *Evaluator) evalFunctionStatement(node *ast.FunctionStatement, env *object.Environment) object.Object {
+
+	args := getArgumentNames(node.Arguments)
+
+	fn := &object.Function{
+		Arguments: args,
+		Body:      node.Body,
+		Env:       env,
+	}
+	name := node.Target.Value
+
+	env.Set(name, fn)
+
+	return &object.Null{}
+}
+func (e *Evaluator) evalLambdaExpression(node *ast.Lambda, env *object.Environment) object.Object {
+	args := getArgumentNames(node.Arguments)
+
+	fn := &object.Function{
+		Arguments: args,
+		Body:      node.Body,
+		Env:       env,
+	}
+
+	return fn
+}
+func newEnclosedEnvironment(outer *object.Environment) *object.Environment {
+	env := object.NewEnvironment()
+
+	env.Outer = outer
+
+	return env
+}
+func (e *Evaluator) evalCallExpression(node *ast.CallExpression, env *object.Environment) object.Object {
+	ex := e.Eval(node.Function, env)
+
+	fn := toFunction(ex)
+
+	if fn == nil {
+		e.Error("Can't call expression %T", ex)
+		return &object.Null{}
+	}
+
+	newEnv := newEnclosedEnvironment(fn.Env)
+
+	e.applyArguments(fn.Arguments, node.Arguments, newEnv)
+
+	return e.Eval(fn.Body, newEnv)
+}
+func (e *Evaluator) applyArguments(params []string, args []ast.Expression, env *object.Environment) {
+
+	if len(params) != len(args) {
+		e.Error("Expected %d arguments, got %d", len(params), len(args))
+		return
+	}
+
+	for i, arg := range args {
+		env.Set(params[i], e.Eval(arg, env))
+	}
+}
+func toFunction(node object.Object) *object.Function {
+	fn, ok := node.(*object.Function)
+	if !ok {
+		return nil
+	}
+	return fn
+}
+
+func (e *Evaluator) evalReturnStatement(node *ast.ReturnStatement, env *object.Environment) object.Object {
+	return e.Eval(node.Value, env)
+}
 
 func (e *Evaluator) Eval(node ast.Node, env *object.Environment) object.Object {
 	switch node := node.(type) {
+	case *ast.ReturnStatement:
+		return e.evalReturnStatement(node, env)
+	case *ast.Lambda:
+		return e.evalLambdaExpression(node, env)
+	case *ast.CallExpression:
+		return e.evalCallExpression(node, env)
+	case *ast.FunctionStatement:
+		return e.evalFunctionStatement(node, env)
 	case *ast.Identifier:
 		return e.evalIdentifier(node, env)
 	case *ast.AssignmentExpression:
@@ -172,10 +260,12 @@ func (e *Evaluator) evalInfixArithmetic(node *ast.InfixExpression, env *object.E
 	left := toInteger(e.Eval(node.Left, env))
 	if left == nil {
 		e.Error("Can't perform infix operation on left expression %T", node.Left)
+		return &object.Null{}
 	}
 	right := toInteger(e.Eval(node.Right, env))
 	if right == nil {
 		e.Error("Can't perform infx operation on right expression %T", node.Right)
+		return &object.Null{}
 	}
 
 	switch node.Operator {

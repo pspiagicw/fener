@@ -1,6 +1,10 @@
 package object
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/pspiagicw/fener/ast"
+)
 
 type ObjectType string
 
@@ -10,6 +14,8 @@ const (
 	BOOLEAN_OBJ = "BOOLEAN"
 
 	NULL_OBJ = "NULL"
+
+	FUNCTION_OBJ = "FUNCTION"
 )
 
 type Object interface {
@@ -46,3 +52,12 @@ type Null struct {
 
 func (n *Null) Type() ObjectType { return NULL_OBJ }
 func (n *Null) String() string   { return "null" }
+
+type Function struct {
+	Env       *Environment
+	Arguments []string
+	Body      *ast.BlockStatement
+}
+
+func (f *Function) Type() ObjectType { return FUNCTION_OBJ }
+func (f *Function) String() string   { return "Function" }

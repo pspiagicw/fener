@@ -42,8 +42,11 @@ func Handle(opts *argparse.Opts) {
 
 		ast, errors := parseLine(line)
 
-		for _, err := range errors {
-			goreland.LogError(err)
+		if len(errors) > 0 {
+			for _, err := range errors {
+				goreland.LogError(err)
+			}
+			continue
 		}
 
 		if opts.PrintAST {

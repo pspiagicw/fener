@@ -14,16 +14,53 @@ type testCase struct {
 	value interface{}
 }
 
-func TestAssignmentEval(t *testing.T) {
+func TestClosure(t *testing.T) {
 	table := []testCase{
-		{"a = 5 a", 5},
-		{"a = 5 a", 5},
+		{
+			`fn counter()
+                count = 0
+                return fn() count = count + 1 end
+             end
+             c = counter()
+             c()
+             `,
+			1,
+		},
+	}
+	runTableTests(t, table)
+}
+
+func TestLambda(t *testing.T) {
+
+	table := []testCase{
+		{"a = fn() 5 end a()", 5},
+		{"add = fn(x,y) x - y end add(3,2)", 1},
 	}
 
 	runTableTests(t, table)
 }
 
-func TestInfixIf(t *testing.T) {
+func TestFunction(t *testing.T) {
+	table := []testCase{
+		{"fn example() 5 end example()", 5},
+		{"fn add(x,y) x + y end add(2,3)", 5},
+	}
+
+	runTableTests(t, table)
+}
+
+func TestAssignment(t *testing.T) {
+	table := []testCase{
+		{"a = 5 a", 5},
+		{"a = 5 b = 3 a+b", 8},
+		{"a = 5 b = 3  c = 6 a+b+6", 14},
+		{"a = 5 b = a  c = 6 a+b+6", 16},
+	}
+
+	runTableTests(t, table)
+}
+
+func TestIf(t *testing.T) {
 	table := []testCase{
 		{"if true then 5 end", 5},
 		{"if 2 == 2 then 5 end", 5},
@@ -36,7 +73,7 @@ func TestInfixIf(t *testing.T) {
 
 }
 
-func TestInfixEval(t *testing.T) {
+func TestInfix(t *testing.T) {
 
 	table := []testCase{
 		{"5", 5},
