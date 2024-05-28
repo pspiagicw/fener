@@ -17,6 +17,7 @@ const (
 
 	FUNCTION_OBJ = "FUNCTION"
 	BULITIN_OBJ  = "BUILTIN"
+	RETURN_OBJ   = "RETURN"
 )
 
 type Object interface {
@@ -69,3 +70,10 @@ type Builtin struct {
 
 func (b *Builtin) Type() ObjectType { return BULITIN_OBJ }
 func (b *Builtin) String() string   { return "Builtin" }
+
+type Return struct {
+	Value Object
+}
+
+func (r *Return) Type() ObjectType { return RETURN_OBJ }
+func (r *Return) String() string   { return r.Value.String() }

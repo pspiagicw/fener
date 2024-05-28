@@ -10,10 +10,12 @@ import (
 
 type Evaluator struct {
 	ErrorHandler func(error)
+	Test         bool
 }
 
 func New(handler func(error)) *Evaluator {
 	return &Evaluator{
+		Test:         false,
 		ErrorHandler: handler,
 	}
 }
@@ -24,106 +26,11 @@ func (e *Evaluator) Error(message string, args ...interface{}) {
 
 	e.ErrorHandler(err)
 }
-func getArgumentNames(args []*ast.Identifier) []string {
-	var names []string
-
-	for _, arg := range args {
-		names = append(names, arg.Value)
-	}
-
-	return names
-}
-func (e *Evaluator) evalFunctionStatement(node *ast.FunctionStatement, env *object.Environment) object.Object {
-
-	args := getArgumentNames(node.Arguments)
-
-	fn := &object.Function{
-		Arguments: args,
-		Body:      node.Body,
-		Env:       env,
-	}
-	name := node.Target.Value
-
-	env.Set(name, fn)
-
-	return &object.Null{}
-}
-func (e *Evaluator) evalLambdaExpression(node *ast.Lambda, env *object.Environment) object.Object {
-	args := getArgumentNames(node.Arguments)
-
-	fn := &object.Function{
-		Arguments: args,
-		Body:      node.Body,
-		Env:       env,
-	}
-
-	return fn
-}
-func newEnclosedEnvironment(outer *object.Environment) *object.Environment {
-	env := object.NewEnvironment()
-
-	env.Outer = outer
-
-	return env
-}
-func (e *Evaluator) evalArgs(args []ast.Expression, env *object.Environment) []object.Object {
-	var evaluated []object.Object
-
-	for _, arg := range args {
-		evaluated = append(evaluated, e.Eval(arg, env))
-	}
-
-	return evaluated
-}
-func (e *Evaluator) evalCallExpression(node *ast.CallExpression, env *object.Environment) object.Object {
-	ex := e.Eval(node.Function, env)
-	args := e.evalArgs(node.Arguments, env)
-
-	switch ex := ex.(type) {
-	case *object.Function:
-		return e.evalFunctionCall(ex, args)
-	case *object.Builtin:
-		return e.evalBuiltinCall(ex, args)
-	default:
-		e.Error("Can't call expression %T", ex)
-		return &object.Null{}
-	}
-}
-func (e *Evaluator) evalBuiltinCall(fn *object.Builtin, args []object.Object) object.Object {
-	return fn.Fn(args...)
-}
-func (e *Evaluator) evalFunctionCall(fn *object.Function, args []object.Object) object.Object {
-	newEnv := newEnclosedEnvironment(fn.Env)
-
-	e.applyArguments(fn.Arguments, args, newEnv)
-
-	return e.Eval(fn.Body, newEnv)
-}
-func (e *Evaluator) applyArguments(params []string, args []object.Object, env *object.Environment) {
-
-	if len(params) != len(args) {
-		e.Error("Expected %d arguments, got %d", len(params), len(args))
-		return
-	}
-
-	for i, arg := range args {
-		env.Set(params[i], arg)
-	}
-}
-func toFunction(node object.Object) *object.Function {
-	fn, ok := node.(*object.Function)
-	if !ok {
-		return nil
-	}
-	return fn
-}
-
-func (e *Evaluator) evalReturnStatement(node *ast.ReturnStatement, env *object.Environment) object.Object {
-	return e.Eval(node.Value, env)
-}
 
 func (e *Evaluator) Eval(node ast.Node, env *object.Environment) object.Object {
 	switch node := node.(type) {
+	case *ast.TestStatement:
+		return e.evalTestStatement(node, env)
 	case *ast.ReturnStatement:
 		return e.evalReturnStatement(node, env)
 	case *ast.Lambda:
@@ -192,7 +99,14 @@ func (e *Evaluator) evalIfExpression(node *ast.IfExpression, env *object.Environ
 
 	if isTruthy(condition) {
 		return e.Eval(node.Consequence, env)
-	} else if node.Alternative != nil {
+	} else if len(node.Elif) > 0 {
+		for condition, block := range node.Elif {
+			if isTruthy(e.Eval(condition, env)) {
+				return e.Eval(block, env)
+			}
+		}
+	}
+	if node.Alternative != nil {
 		return e.Eval(node.Alternative, env)
 	}
 	return &object.Null{}
@@ -344,4 +258,107 @@ func isTruthy(obj object.Object) bool {
 	default:
 		return false
 	}
+}
+func getArgumentNames(args []*ast.Identifier) []string {
+	var names []string
+
+	for _, arg := range args {
+		names = append(names, arg.Value)
+	}
+
+	return names
+}
+func (e *Evaluator) evalFunctionStatement(node *ast.FunctionStatement, env *object.Environment) object.Object {
+
+	args := getArgumentNames(node.Arguments)
+
+	fn := &object.Function{
+		Arguments: args,
+		Body:      node.Body,
+		Env:       env,
+	}
+	name := node.Target.Value
+
+	env.Set(name, fn)
+
+	return &object.Null{}
+}
+func (e *Evaluator) evalLambdaExpression(node *ast.Lambda, env *object.Environment) object.Object {
+	args := getArgumentNames(node.Arguments)
+
+	fn := &object.Function{
+		Arguments: args,
+		Body:      node.Body,
+		Env:       env,
+	}
+
+	return fn
+}
+func newEnclosedEnvironment(outer *object.Environment) *object.Environment {
+	env := object.NewEnvironment()
+
+	env.Outer = outer
+
+	return env
+}
+func (e *Evaluator) evalArgs(args []ast.Expression, env *object.Environment) []object.Object {
+	var evaluated []object.Object
+
+	for _, arg := range args {
+		evaluated = append(evaluated, e.Eval(arg, env))
+	}
+
+	return evaluated
+}
+func (e *Evaluator) evalCallExpression(node *ast.CallExpression, env *object.Environment) object.Object {
+	ex := e.Eval(node.Function, env)
+	args := e.evalArgs(node.Arguments, env)
+
+	switch ex := ex.(type) {
+	case *object.Function:
+		return e.evalFunctionCall(ex, args)
+	case *object.Builtin:
+		return e.evalBuiltinCall(ex, args)
+	default:
+		e.Error("Can't call expression %T", ex)
+		return &object.Null{}
+	}
+}
+func (e *Evaluator) evalBuiltinCall(fn *object.Builtin, args []object.Object) object.Object {
+	return fn.Fn(args...)
+}
+func (e *Evaluator) evalFunctionCall(fn *object.Function, args []object.Object) object.Object {
+	newEnv := newEnclosedEnvironment(fn.Env)
+
+	e.applyArguments(fn.Arguments, args, newEnv)
+
+	return e.Eval(fn.Body, newEnv)
+}
+func (e *Evaluator) applyArguments(params []string, args []object.Object, env *object.Environment) {
+
+	if len(params) != len(args) {
+		e.Error("Expected %d arguments, got %d", len(params), len(args))
+		return
+	}
+
+	for i, arg := range args {
+		env.Set(params[i], arg)
+	}
+}
+func toFunction(node object.Object) *object.Function {
+	fn, ok := node.(*object.Function)
+	if !ok {
+		return nil
+	}
+	return fn
+}
+
+func (e *Evaluator) evalReturnStatement(node *ast.ReturnStatement, env *object.Environment) object.Object {
+	return &object.Return{Value: e.Eval(node.Value, env)}
+}
+func (e *Evaluator) evalTestStatement(node *ast.TestStatement, env *object.Environment) object.Object {
+	if e.Test {
+		return e.Eval(node.Statements, env)
+	}
+	return &object.Null{}
 }

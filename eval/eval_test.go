@@ -14,6 +14,27 @@ type testCase struct {
 	value interface{}
 }
 
+func TestTest(t *testing.T) {
+	table := []testCase{
+		{
+			`test "simple test"
+                assert(1,2)
+             end`,
+			nil,
+		},
+	}
+	runTableTests(t, table)
+}
+func TestBuiltin(t *testing.T) {
+	table := []testCase{
+		{
+			`print("Hello!")`,
+			nil,
+		},
+	}
+	runTableTests(t, table)
+}
+
 func TestClosure(t *testing.T) {
 	table := []testCase{
 		{
