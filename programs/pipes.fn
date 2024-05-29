@@ -1,7 +1,0 @@
-print($ls -> $(wc -l))
-
-print($(awk -F "something"))
-
-someVar = "Cores"
-
-print($(cat /proc/cpuinfo) -> $(grep -v {someVar}))

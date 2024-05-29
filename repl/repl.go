@@ -1,12 +1,9 @@
 package repl
 
 import (
-	"bufio"
 	"flag"
 	"fmt"
-	"strings"
 
-	"github.com/chzyer/readline"
 	"github.com/pspiagicw/fener/argparse"
 	"github.com/pspiagicw/fener/ast"
 	"github.com/pspiagicw/fener/eval"
@@ -15,6 +12,7 @@ import (
 	"github.com/pspiagicw/fener/object"
 	"github.com/pspiagicw/fener/parser"
 	"github.com/pspiagicw/goreland"
+	"github.com/pspiagicw/regolith"
 	"github.com/sanity-io/litter"
 )
 
@@ -32,13 +30,26 @@ func Handle(opts *argparse.Opts) {
 
 	parseReplArgs(opts)
 
-	rl := initREPL()
-	defer rl.Close()
+	rg, err := regolith.New(&regolith.Config{
+		StartWords: []string{"if", "fn", "while"},
+		EndWords:   []string{"end"},
+	})
+
+	if err != nil {
+		goreland.LogFatal("Error initializing regolith: %v", err)
+	}
+
+	defer rg.Close()
+
 	env := object.NewEnvironment()
 
 	for true {
 
-		line := getInput(rl)
+		line, err := rg.Input()
+
+		if err != nil {
+			goreland.LogFatal("Error reading input: %v", err)
+		}
 
 		ast, errors := parseLine(line)
 
@@ -69,40 +80,6 @@ func parseLine(line string) (*ast.Program, []string) {
 
 }
 
-func getLine(rw *bufio.Reader) string {
-
-	fmt.Printf(">>> ")
-
-	value, err := rw.ReadString('\n')
-	if err != nil {
-		goreland.LogFatal("Error reading string: %v", err)
-	}
-	return value
-}
 func printAST(program *ast.Program) {
 	litter.Dump(program)
-}
-
-func getInput(r *readline.Instance) string {
-	line, err := r.Readline()
-	if err != nil {
-		goreland.LogFatal("Error reading input from prompt: %v", err)
-	}
-	line = strings.TrimSpace(line)
-
-	return line
-}
-
-func initREPL() *readline.Instance {
-	r, err := readline.NewEx(&readline.Config{
-		Prompt:          ">>> ",
-		HistoryFile:     "/tmp/readline.tmp",
-		InterruptPrompt: "^D",
-	})
-
-	if err != nil {
-		goreland.LogFatal("Error initalizing readline: %v", err)
-	}
-
-	return r
 }

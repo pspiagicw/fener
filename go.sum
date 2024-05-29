@@ -29,6 +29,8 @@ github.com/pspiagicw/goreland v0.0.0-20231129143657-4b9ff8ac7ad5 h1:vtXgJQnlbnQL
 github.com/pspiagicw/goreland v0.0.0-20231129143657-4b9ff8ac7ad5/go.mod h1:w9C97TNLperGU930lN/hc2XuWUlYzPbBUW1OA1ka4DM=
 github.com/pspiagicw/pelp v0.0.0-20240318161701-7448ea2e376e h1:N0ZhzS8AdPstCIV7eti5BOXhen73DjGj0+d393GXWcU=
 github.com/pspiagicw/pelp v0.0.0-20240318161701-7448ea2e376e/go.mod h1:HSSd41FYDxcdCZvXRKUlh9Uh9PaXzdX2vTnwhHkgN0Q=
+github.com/pspiagicw/regolith v0.0.0-20240529080134-2bef52bba263 h1:6ijio2/SKDp37hMhWPxUiQGCaY2CauFHWBBWvN8zmyc=
+github.com/pspiagicw/regolith v0.0.0-20240529080134-2bef52bba263/go.mod h1:kipuq1zkCkFmTu5W71/8CNkouSFFtcEDmY9l8NaqCBU=
 github.com/rivo/uniseg v0.1.0/go.mod h1:J6wj4VEh+S6ZtnVlnTBMWIodfgj8LQOQFoIToxlJtxc=
 github.com/rivo/uniseg v0.2.0/go.mod h1:J6wj4VEh+S6ZtnVlnTBMWIodfgj8LQOQFoIToxlJtxc=
 github.com/rivo/uniseg v0.4.7 h1:WUdvkW8uEhrYfLC4ZzdpI2ztxP1I582+49Oc5Mq64VQ=
