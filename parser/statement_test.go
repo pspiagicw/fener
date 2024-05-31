@@ -7,6 +7,75 @@ import (
 	"github.com/pspiagicw/fener/token"
 )
 
+func TestEmptyClassStatement(t *testing.T) {
+	input := `
+    class className
+    end
+    `
+
+	expectedTree := []ast.Statement{
+		&ast.ClassStatement{
+			Target:  &ast.Identifier{Value: "className", Token: &token.Token{Type: token.IDENT, Value: "className", Line: 1}},
+			Methods: []*ast.FunctionStatement{},
+		},
+	}
+	checkTree(t, input, expectedTree)
+}
+func TestMethodClassStatement(t *testing.T) {
+
+	input := `
+    class Dog
+        fn bark()
+            print("Woof")
+        end
+        fn eat()
+            print("Yum")
+        end
+    end
+    `
+
+	expectedTree := []ast.Statement{
+		&ast.ClassStatement{
+			Target: &ast.Identifier{Value: "Dog", Token: &token.Token{Type: token.IDENT, Value: "Dog", Line: 1}},
+			Methods: []*ast.FunctionStatement{
+				{
+					Target:    &ast.Identifier{Value: "bark", Token: &token.Token{Type: token.IDENT, Value: "bark", Line: 2}},
+					Arguments: []*ast.Identifier{},
+					Body: &ast.BlockStatement{
+						Statements: []ast.Statement{
+							&ast.ExpressionStatement{
+								Expression: &ast.CallExpression{
+									Function: &ast.Identifier{Value: "print", Token: &token.Token{Type: token.IDENT, Value: "print", Line: 3}},
+									Arguments: []ast.Expression{
+										&ast.String{Value: "Woof", Token: &token.Token{Type: token.STRING, Value: "Woof", Line: 3}},
+									},
+								},
+							},
+						},
+					},
+				},
+				{
+					Target:    &ast.Identifier{Value: "eat", Token: &token.Token{Type: token.IDENT, Value: "eat", Line: 5}},
+					Arguments: []*ast.Identifier{},
+					Body: &ast.BlockStatement{
+						Statements: []ast.Statement{
+							&ast.ExpressionStatement{
+								Expression: &ast.CallExpression{
+									Function: &ast.Identifier{Value: "print", Token: &token.Token{Type: token.IDENT, Value: "print", Line: 6}},
+									Arguments: []ast.Expression{
+										&ast.String{Value: "Yum", Token: &token.Token{Type: token.STRING, Value: "Yum", Line: 6}},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+	checkTree(t, input, expectedTree)
+}
+
 func TestParserTest(t *testing.T) {
 	input := `
     test "Test 1"

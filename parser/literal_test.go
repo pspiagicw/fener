@@ -155,6 +155,7 @@ func TestParserBoolean(t *testing.T) {
 }
 
 func checkTree(t *testing.T, input string, expectedTree []ast.Statement) {
+	t.Helper()
 	l := lexer.New(input)
 	p := New(l)
 

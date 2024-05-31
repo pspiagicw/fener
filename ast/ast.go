@@ -319,3 +319,24 @@ func (pe *PrefixExpression) expressionNode() {}
 func (pe *PrefixExpression) String() string {
 	return fmt.Sprintf("(%s%s)", pe.Operator, pe.Right.String())
 }
+
+type ClassStatement struct {
+	Token   *token.Token
+	Target  *Identifier
+	Methods []*FunctionStatement
+}
+
+func (cs *ClassStatement) Name() string   { return "ClassStatement" }
+func (cs *ClassStatement) statementNode() {}
+func (cs *ClassStatement) String() string {
+	var out strings.Builder
+	out.WriteString("class ")
+	out.WriteString(cs.Target.Value)
+	out.WriteString("\n")
+	for _, method := range cs.Methods {
+		out.WriteString(method.String())
+		out.WriteString("\n")
+	}
+	out.WriteString("end\n")
+	return out.String()
+}

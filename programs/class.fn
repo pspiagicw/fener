@@ -5,7 +5,7 @@ class className
     end
 
     fn giveName() 
-        return self.name
+        return name
     end
     fn setName(name)
         self.name = name

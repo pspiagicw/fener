@@ -140,6 +140,8 @@ func (p *Parser) parseStatement() ast.Statement {
 		return p.parseFunctionStatement()
 	case token.TEST:
 		return p.parseTestStatement()
+	case token.CLASS:
+		return p.parseClassStatement()
 	default:
 		return p.parseExpressionStatement()
 	}

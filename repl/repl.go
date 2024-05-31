@@ -31,7 +31,7 @@ func Handle(opts *argparse.Opts) {
 	parseReplArgs(opts)
 
 	rg, err := regolith.New(&regolith.Config{
-		StartWords: []string{"if", "fn", "while"},
+		StartWords: []string{"if", "fn", "while", "class"},
 		EndWords:   []string{"end"},
 	})
 

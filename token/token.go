@@ -56,6 +56,7 @@ const (
 	END      = "END"
 	THEN     = "THEN"
 	TEST     = "TEST"
+	CLASS    = "CLASS"
 
 	AND = "AND"
 	OR  = "OR"
@@ -76,8 +77,4 @@ const (
 
 	DOT   = "."
 	COMMA = ","
-
-	ESTART  = "ESTART"
-	EEND    = "EEND"
-	EMIDDLE = "EMID"
 )

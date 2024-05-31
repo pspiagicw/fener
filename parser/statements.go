@@ -5,6 +5,34 @@ import (
 	"github.com/pspiagicw/fener/token"
 )
 
+func (p *Parser) parseClassStatement() ast.Statement {
+	stmt := &ast.ClassStatement{Token: p.curToken}
+
+	p.advance()
+
+	value := p.parseExpression(LOWEST)
+
+	ident, ok := value.(*ast.Identifier)
+
+	if !ok {
+		p.errors = append(p.errors, "Expected identifier target for class statement")
+	}
+
+	stmt.Target = ident
+
+	stmt.Methods = []*ast.FunctionStatement{}
+
+	for !p.curTokenIs(token.END) && !p.curTokenIs(token.EOF) {
+		stmt.Methods = append(stmt.Methods, p.parseFunctionStatement())
+	}
+
+	if !p.expect(token.END) {
+		return nil
+	}
+
+	return stmt
+}
+
 func (p *Parser) parseTestStatement() *ast.TestStatement {
 	stmt := &ast.TestStatement{Token: p.curToken}
 

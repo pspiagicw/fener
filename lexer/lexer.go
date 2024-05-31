@@ -124,6 +124,8 @@ func (l *Lexer) keyword(ident string) *token.Token {
 		return l.token(token.ELIF, "elif")
 	case "test":
 		return l.token(token.TEST, "test")
+	case "class":
+		return l.token(token.CLASS, "class")
 	default:
 		return l.token(token.IDENT, ident)
 	}
