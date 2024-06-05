@@ -18,6 +18,8 @@ const (
 	FUNCTION_OBJ = "FUNCTION"
 	BULITIN_OBJ  = "BUILTIN"
 	RETURN_OBJ   = "RETURN"
+	CLASS_OBJ    = "CLASS"
+	INSTANCE_OBJ = "INSTANCE"
 )
 
 type Object interface {

@@ -18,6 +18,7 @@ const (
 	MOD
 	BOOLEAN
 	PREFIX
+	FIELD
 	CALL
 	INDEX
 	ASSIGNMENT
@@ -42,6 +43,7 @@ var precedences = map[token.TokenType]int{
 	token.BITAND:   BOOLEAN,
 	token.BITOR:    BOOLEAN,
 	token.LSQUARE:  INDEX,
+	token.DOT:      FIELD,
 }
 
 type infixParseFn func(ast.Expression) ast.Expression
@@ -99,6 +101,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerInfix(token.BITAND, p.parseInfixExpression)
 	p.registerInfix(token.BITOR, p.parseInfixExpression)
 	p.registerInfix(token.LSQUARE, p.parseIndexExpression)
+	p.registerInfix(token.DOT, p.parseFieldExpression)
 
 	p.advance()
 	p.advance()

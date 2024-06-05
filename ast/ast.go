@@ -340,3 +340,15 @@ func (cs *ClassStatement) String() string {
 	out.WriteString("end\n")
 	return out.String()
 }
+
+type FieldExpression struct {
+	Token  *token.Token
+	Target Expression
+	Field  *Identifier
+}
+
+func (fe *FieldExpression) Name() string    { return "FieldExpression" }
+func (fe *FieldExpression) expressionNode() {}
+func (fe *FieldExpression) String() string {
+	return fmt.Sprintf("%s.%s", fe.Target.String(), fe.Field.String())
+}

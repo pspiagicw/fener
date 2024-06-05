@@ -1,5 +1,5 @@
 class className
-    fn init(name  some)
+    fn init(name, some)
         self.name = name
         self.some = some
     end
