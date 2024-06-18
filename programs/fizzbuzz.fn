@@ -1,4 +1,4 @@
-fn fuzzbuzz(n)
+fn fizzbuzz(n)
     if n % 5 == 0 && n % 3 == 0 then
         print("FizzBuzz")
     elif n % 3 == 0 then
@@ -12,7 +12,7 @@ end
 
 a = 5
 
-;; while a > 0 then
-;;     fizzbuzz(a)
-;;     a = a + 1
-;; end
+while a > 0 then
+    fizzbuzz(a)
+    a = a - 1
+end

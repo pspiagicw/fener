@@ -29,6 +29,8 @@ func (e *Evaluator) Error(message string, args ...interface{}) {
 
 func (e *Evaluator) Eval(node ast.Node, env *object.Environment) object.Object {
 	switch node := node.(type) {
+	case *ast.WhileStatement:
+		return e.evalWhileStatement(node, env)
 	case *ast.TestStatement:
 		return e.evalTestStatement(node, env)
 	case *ast.ReturnStatement:
@@ -65,6 +67,18 @@ func (e *Evaluator) Eval(node ast.Node, env *object.Environment) object.Object {
 		e.Error("Unknown node type: %T", node)
 		return &object.Null{}
 	}
+}
+func (e *Evaluator) evalWhileStatement(node *ast.WhileStatement, env *object.Environment) object.Object {
+	for true {
+		value := e.Eval(node.Condition, env)
+
+		if isTruthy(value) {
+			e.Eval(node.Consequence, env)
+		} else {
+			break
+		}
+	}
+	return &object.Null{}
 }
 func (e *Evaluator) evalIdentifier(node *ast.Identifier, env *object.Environment) object.Object {
 	value := env.Get(node.Value)
