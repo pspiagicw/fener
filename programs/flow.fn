@@ -23,8 +23,8 @@ else
     print("Number is not 2 or 3")
 end
 
-;; while true then
-;;     print("Infinity!")
-;; end
+while true then
+    print("Infinity!")
+end
 
 
