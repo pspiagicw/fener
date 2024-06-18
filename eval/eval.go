@@ -29,10 +29,6 @@ func (e *Evaluator) Error(message string, args ...interface{}) {
 
 func (e *Evaluator) Eval(node ast.Node, env *object.Environment) object.Object {
 	switch node := node.(type) {
-	case *ast.FieldExpression:
-		return e.evalFieldExpression(node, env)
-	case *ast.ClassStatement:
-		return e.evalClassStatement(node, env)
 	case *ast.TestStatement:
 		return e.evalTestStatement(node, env)
 	case *ast.ReturnStatement:
@@ -326,8 +322,6 @@ func (e *Evaluator) evalCallExpression(node *ast.CallExpression, env *object.Env
 		return e.evalFunctionCall(ex, args)
 	case *object.Builtin:
 		return e.evalBuiltinCall(ex, args)
-	case *object.Class:
-		return e.evalClassCall(ex, args)
 	default:
 		e.Error("Can't call expression %T", ex)
 		return &object.Null{}
@@ -335,11 +329,6 @@ func (e *Evaluator) evalCallExpression(node *ast.CallExpression, env *object.Env
 }
 func (e *Evaluator) evalBuiltinCall(fn *object.Builtin, args []object.Object) object.Object {
 	return fn.Fn(args...)
-}
-func (e *Evaluator) evalClassCall(class *object.Class, args []object.Object) object.Object {
-	instance := &object.Instance{Class: class}
-
-	return instance
 }
 func (e *Evaluator) evalFunctionCall(fn *object.Function, args []object.Object) object.Object {
 	newEnv := newEnclosedEnvironment(fn.Env)
@@ -382,14 +371,5 @@ func (e *Evaluator) evalTestStatement(node *ast.TestStatement, env *object.Envir
 	if e.Test {
 		return e.Eval(node.Statements, env)
 	}
-	return &object.Null{}
-}
-func (e *Evaluator) evalClassStatement(node *ast.ClassStatement, env *object.Environment) object.Object {
-	name := node.Target.Value
-
-	class := &object.Class{Name: name}
-
-	env.Set(name, class)
-
 	return &object.Null{}
 }

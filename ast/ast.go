@@ -345,6 +345,7 @@ type FieldExpression struct {
 	Token  *token.Token
 	Target Expression
 	Field  *Identifier
+	Method *CallExpression
 }
 
 func (fe *FieldExpression) Name() string    { return "FieldExpression" }

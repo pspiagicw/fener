@@ -101,7 +101,6 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerInfix(token.BITAND, p.parseInfixExpression)
 	p.registerInfix(token.BITOR, p.parseInfixExpression)
 	p.registerInfix(token.LSQUARE, p.parseIndexExpression)
-	p.registerInfix(token.DOT, p.parseFieldExpression)
 
 	p.advance()
 	p.advance()

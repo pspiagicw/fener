@@ -14,17 +14,6 @@ type testCase struct {
 	value interface{}
 }
 
-// func TestClass(t *testing.T) {
-// 	table := []testCase{
-// 		{
-// 			`class counter
-//              end`,
-// 			nil,
-// 		},
-// 	}
-// 	runTableTests(t, table)
-// }
-
 func TestTest(t *testing.T) {
 	table := []testCase{
 		{

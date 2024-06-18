@@ -8,22 +8,22 @@ import (
 	"github.com/pspiagicw/fener/token"
 )
 
-func TestFieldExpression(t *testing.T) {
-	input := `someObject.field`
-
-	expectedTree := []ast.Statement{
-		&ast.ExpressionStatement{
-			Expression: &ast.FieldExpression{
-				Target: &ast.Identifier{Value: "someObject",
-					Token: &token.Token{Type: token.IDENT, Value: "someObject", Line: 0}},
-				Field: &ast.Identifier{Value: "field",
-					Token: &token.Token{Type: token.IDENT, Value: "field", Line: 0}},
-			},
-		},
-	}
-
-	checkTree(t, input, expectedTree)
-}
+//	func TestFieldExpression(t *testing.T) {
+//		input := `someObject.field`
+//
+//		expectedTree := []ast.Statement{
+//			&ast.ExpressionStatement{
+//				Expression: &ast.FieldExpression{
+//					Target: &ast.Identifier{Value: "someObject",
+//						Token: &token.Token{Type: token.IDENT, Value: "someObject", Line: 0}},
+//					Field: &ast.Identifier{Value: "field",
+//						Token: &token.Token{Type: token.IDENT, Value: "field", Line: 0}},
+//				},
+//			},
+//		}
+//
+//		checkTree(t, input, expectedTree)
+//	}
 func TestIndexExpression(t *testing.T) {
 	input := `myArray[1 + 1]`
 

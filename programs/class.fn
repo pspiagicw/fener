@@ -1,21 +1,3 @@
-class className
-    fn init(name, some)
-        self.name = name
-        self.some = some
-    end
-
-    fn giveName() 
-        return name
-    end
-    fn setName(name)
-        self.name = name
-    end
-end
-
-var = className("pspiagicw", 1)
-
-print(var.giveName(name))
-
 ;; You can only have class methods, no attributes.
 ;; Meaning, you can't do this
 
