@@ -23,8 +23,12 @@ else
     print("Number is not 2 or 3")
 end
 
-while true then
+number = 1
+
+while number < 4 then
     print("Infinity!")
+    number = number + 1
+    print("Infinity" | upper)
 end
 
 

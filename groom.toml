@@ -9,7 +9,7 @@ command = "go build ."
 
 
 [task.test]
-command = "go test ./... -test.fullpath"
+command = "go test ./... -test.fullpath -timeout 1000ms"
 depends = [
     "format"
 ]

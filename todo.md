@@ -1,2 +1,5 @@
+# todo
+
 - [x] Make the repl better!
-- [ ] Add some extensive `class` 'eval' tests.
+- (Rejected) [ ] Add some extensive `class` 'eval' tests.
+- [ ] Make object print better
