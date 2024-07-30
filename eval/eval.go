@@ -151,10 +151,14 @@ func (e *Evaluator) evalProgram(node *ast.Program, env *object.Environment) obje
 
 func (e *Evaluator) evalInfixExpression(node *ast.InfixExpression, env *object.Environment) object.Object {
 	switch node.Operator {
-	case token.MINUS, token.MULTIPLY, token.DIVIDE, token.PLUS:
+	case token.MINUS, token.MULTIPLY, token.DIVIDE, token.PLUS, token.MOD:
 		return e.evalInfixArithmetic(node, env)
-	case token.EQ, token.NOT_EQ, token.GT, token.LT:
+	case token.EQ, token.NOT_EQ, token.GT, token.LT, token.GTE, token.LTE:
 		return e.evalInfixComparison(node, env)
+	case token.OR, token.AND:
+		return e.evalInfixLogical(node, env)
+	default:
+		e.Error("Unknown infix operator: %q", node.Operator)
 	}
 
 	return &object.Null{}
@@ -164,6 +168,20 @@ func isEqual(left object.Object, right object.Object) bool {
 		return true
 	}
 	return false
+}
+func (e *Evaluator) evalInfixLogical(node *ast.InfixExpression, env *object.Environment) object.Object {
+	left := e.Eval(node.Left, env)
+	right := e.Eval(node.Right, env)
+
+	switch node.Operator {
+	case token.OR:
+		return &object.Boolean{Value: isTruthy(left) || isTruthy(right)}
+	case token.AND:
+		return &object.Boolean{Value: isTruthy(left) && isTruthy(right)}
+	default:
+		e.Error("Unknown infix logical operator: %s", node.Operator)
+		return &object.Null{}
+	}
 }
 func (e *Evaluator) evalInfixComparison(node *ast.InfixExpression, env *object.Environment) object.Object {
 	left := e.Eval(node.Left, env)
@@ -178,6 +196,10 @@ func (e *Evaluator) evalInfixComparison(node *ast.InfixExpression, env *object.E
 		return e.evalGreaterThan(left, right)
 	case token.LT:
 		return e.evalLessThan(left, right)
+	case token.GTE:
+		return &object.Boolean{Value: !isTruthy(e.evalLessThan(left, right))}
+	case token.LTE:
+		return &object.Boolean{Value: !isTruthy(e.evalGreaterThan(left, right))}
 	default:
 		e.Error("Unknown infix comparison operator: %s", node.Operator)
 		return &object.Null{}
@@ -207,12 +229,12 @@ func (e *Evaluator) evalLessThan(left, right object.Object) object.Object {
 func (e *Evaluator) evalInfixArithmetic(node *ast.InfixExpression, env *object.Environment) object.Object {
 	left := toInteger(e.Eval(node.Left, env))
 	if left == nil {
-		e.Error("Can't perform infix operation on left expression %T", node.Left)
+		e.Error("Can't perform infix operation on left expression %T", left)
 		return &object.Null{}
 	}
 	right := toInteger(e.Eval(node.Right, env))
 	if right == nil {
-		e.Error("Can't perform infx operation on right expression %T", node.Right)
+		e.Error("Can't perform infix operation on right expression %T", node.Right)
 		return &object.Null{}
 	}
 
@@ -225,6 +247,8 @@ func (e *Evaluator) evalInfixArithmetic(node *ast.InfixExpression, env *object.E
 		return &object.Integer{Value: left.Value * right.Value}
 	case token.DIVIDE:
 		return &object.Integer{Value: left.Value / right.Value}
+	case token.MOD:
+		return &object.Integer{Value: left.Value % right.Value}
 	default:
 		e.Error("Unknown arithmetic infix operator: %s", node.Operator)
 		return &object.Null{}

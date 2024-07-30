@@ -282,3 +282,15 @@ func TestLexerTokenization(t *testing.T) {
 	checkTokens(t, expectedTokens, input)
 
 }
+
+// func TestPipe(t *testing.T) {
+// 	input := `"Hello, World!" | echo`
+//
+// 	expectedTokens := []token.Token{
+// 		{Type: token.STRING, Value: "Hello, World!"},
+// 		{Type: token.PIPE, Value: "|"},
+// 		{Type: token.IDENT, Value: "echo"},
+// 	}
+//
+// 	checkTokens(t, expectedTokens, input)
+// }
