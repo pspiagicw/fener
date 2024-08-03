@@ -79,7 +79,7 @@ func (f *Function) Pretty() string { return f.String() }
 
 type Builtin struct {
 	Name string
-	Fn   func(args ...Object) Object
+	Fn   func(args ...Object) (Object, error)
 }
 
 func (b *Builtin) Type() ObjectType { return BULITIN_OBJ }

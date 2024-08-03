@@ -65,7 +65,7 @@ func (e *Evaluator) Eval(node ast.Node, env *object.Environment) object.Object {
 		return e.evalProgram(node, env)
 	default:
 		e.Error("Unknown node type: %T", node)
-		return &object.Null{}
+		return nil
 	}
 }
 func (e *Evaluator) evalWhileStatement(node *ast.WhileStatement, env *object.Environment) object.Object {
@@ -85,7 +85,7 @@ func (e *Evaluator) evalIdentifier(node *ast.Identifier, env *object.Environment
 
 	if value == nil {
 		e.Error("Identifier not found: %s", node.Value)
-		return &object.Null{}
+		return nil
 	}
 
 	return value
@@ -159,9 +159,8 @@ func (e *Evaluator) evalInfixExpression(node *ast.InfixExpression, env *object.E
 		return e.evalInfixLogical(node, env)
 	default:
 		e.Error("Unknown infix operator: %q", node.Operator)
+		return nil
 	}
-
-	return &object.Null{}
 }
 func isEqual(left object.Object, right object.Object) bool {
 	if left.Type() == right.Type() && left.String() == right.String() {
@@ -180,7 +179,7 @@ func (e *Evaluator) evalInfixLogical(node *ast.InfixExpression, env *object.Envi
 		return &object.Boolean{Value: isTruthy(left) && isTruthy(right)}
 	default:
 		e.Error("Unknown infix logical operator: %s", node.Operator)
-		return &object.Null{}
+		return nil
 	}
 }
 func (e *Evaluator) evalInfixComparison(node *ast.InfixExpression, env *object.Environment) object.Object {
@@ -202,7 +201,7 @@ func (e *Evaluator) evalInfixComparison(node *ast.InfixExpression, env *object.E
 		return &object.Boolean{Value: !isTruthy(e.evalGreaterThan(left, right))}
 	default:
 		e.Error("Unknown infix comparison operator: %s", node.Operator)
-		return &object.Null{}
+		return nil
 	}
 }
 func (e *Evaluator) evalGreaterThan(left, right object.Object) object.Object {
@@ -211,7 +210,7 @@ func (e *Evaluator) evalGreaterThan(left, right object.Object) object.Object {
 
 	if leftInt == nil || rightInt == nil {
 		e.Error("Can't compare expressions %T and %T", left, right)
-		return &object.Null{}
+		return nil
 	}
 	return &object.Boolean{Value: leftInt.Value > rightInt.Value}
 
@@ -222,7 +221,7 @@ func (e *Evaluator) evalLessThan(left, right object.Object) object.Object {
 
 	if leftInt == nil || rightInt == nil {
 		e.Error("Can't compare expressions %T and %T", left, right)
-		return &object.Null{}
+		return nil
 	}
 	return &object.Boolean{Value: leftInt.Value < rightInt.Value}
 }
@@ -230,12 +229,12 @@ func (e *Evaluator) evalInfixArithmetic(node *ast.InfixExpression, env *object.E
 	left := toInteger(e.Eval(node.Left, env))
 	if left == nil {
 		e.Error("Can't perform infix operation on left expression %T", left)
-		return &object.Null{}
+		return nil
 	}
 	right := toInteger(e.Eval(node.Right, env))
 	if right == nil {
 		e.Error("Can't perform infix operation on right expression %T", node.Right)
-		return &object.Null{}
+		return nil
 	}
 
 	switch node.Operator {
@@ -251,7 +250,7 @@ func (e *Evaluator) evalInfixArithmetic(node *ast.InfixExpression, env *object.E
 		return &object.Integer{Value: left.Value % right.Value}
 	default:
 		e.Error("Unknown arithmetic infix operator: %s", node.Operator)
-		return &object.Null{}
+		return nil
 	}
 }
 func (e *Evaluator) negateValue(value object.Object) object.Object {
@@ -259,7 +258,7 @@ func (e *Evaluator) negateValue(value object.Object) object.Object {
 
 	if number == nil {
 		e.Error("Can't negate expression %T", value)
-		return &object.Null{}
+		return nil
 	}
 
 	return &object.Integer{Value: -number.Value}
@@ -276,7 +275,7 @@ func (e *Evaluator) evalPrefixExpression(node *ast.PrefixExpression, env *object
 		return &object.Boolean{Value: !isTruthy(right)}
 	default:
 		e.Error("Unknown prefix operator: %s", node.Operator)
-		return &object.Null{}
+		return nil
 	}
 }
 func toInteger(obj object.Object) *object.Integer {
@@ -362,11 +361,16 @@ func (e *Evaluator) evalCallExpression(node *ast.CallExpression, env *object.Env
 		return e.evalBuiltinCall(ex, args)
 	default:
 		e.Error("Can't call expression %T", ex)
-		return &object.Null{}
+		return nil
 	}
 }
 func (e *Evaluator) evalBuiltinCall(fn *object.Builtin, args []object.Object) object.Object {
-	return fn.Fn(args...)
+	value, err := fn.Fn(args...)
+	if err != nil {
+		e.Error("Error calling builtin function %s: %s", fn.Name, err)
+		return nil
+	}
+	return value
 }
 func (e *Evaluator) evalFunctionCall(fn *object.Function, args []object.Object) object.Object {
 	newEnv := newEnclosedEnvironment(fn.Env)
