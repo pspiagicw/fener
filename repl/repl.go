@@ -26,7 +26,7 @@ func parseReplArgs(opts *argparse.Opts) {
 	flag.Parse(opts.Args)
 }
 
-func Handle(opts *argparse.Opts) {
+func Entry(opts *argparse.Opts) {
 
 	parseReplArgs(opts)
 

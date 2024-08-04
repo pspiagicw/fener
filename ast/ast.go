@@ -114,7 +114,7 @@ func (i *Identifier) String() string  { return fmt.Sprintf("%s", i.Value) }
 type AssignmentExpression struct {
 	Token  *token.Token
 	Value  Expression
-	Target *Identifier
+	Target Expression
 }
 
 func (ae *AssignmentExpression) Name() string    { return "AssignmentExpression" }
@@ -344,8 +344,7 @@ func (cs *ClassStatement) String() string {
 type FieldExpression struct {
 	Token  *token.Token
 	Target Expression
-	Field  *Identifier
-	Method *CallExpression
+	Field  *token.Token
 }
 
 func (fe *FieldExpression) Name() string    { return "FieldExpression" }

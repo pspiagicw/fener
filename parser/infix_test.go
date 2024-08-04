@@ -8,22 +8,39 @@ import (
 	"github.com/pspiagicw/fener/token"
 )
 
-//	func TestFieldExpression(t *testing.T) {
-//		input := `someObject.field`
-//
-//		expectedTree := []ast.Statement{
-//			&ast.ExpressionStatement{
-//				Expression: &ast.FieldExpression{
-//					Target: &ast.Identifier{Value: "someObject",
-//						Token: &token.Token{Type: token.IDENT, Value: "someObject", Line: 0}},
-//					Field: &ast.Identifier{Value: "field",
-//						Token: &token.Token{Type: token.IDENT, Value: "field", Line: 0}},
-//				},
-//			},
-//		}
-//
-//		checkTree(t, input, expectedTree)
-//	}
+func TestFieldSetExpression(t *testing.T) {
+
+	input := `someObject.field = 5`
+
+	expectedTree := []ast.Statement{
+		&ast.ExpressionStatement{
+			Expression: &ast.AssignmentExpression{
+				Value: &ast.Integer{Value: 5, Token: &token.Token{Type: token.INT, Value: "5", Line: 0}},
+				Target: &ast.FieldExpression{
+					Target: &ast.Identifier{Value: "someObject", Token: &token.Token{Type: token.IDENT, Value: "someObject", Line: 0}},
+					Field:  &token.Token{Type: token.IDENT, Value: "field", Line: 0},
+				},
+			},
+		},
+	}
+	checkTree(t, input, expectedTree)
+}
+func TestFieldExpression(t *testing.T) {
+	input := `someObject.field`
+
+	expectedTree := []ast.Statement{
+		&ast.ExpressionStatement{
+			Expression: &ast.FieldExpression{
+				Target: &ast.Identifier{Value: "someObject",
+					Token: &token.Token{Type: token.IDENT, Value: "someObject", Line: 0}},
+				Field: &token.Token{Type: token.IDENT, Value: "field", Line: 0},
+			},
+		},
+	}
+
+	checkTree(t, input, expectedTree)
+}
+
 func TestIndexExpression(t *testing.T) {
 	input := `myArray[1 + 1]`
 

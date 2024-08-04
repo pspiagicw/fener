@@ -10,8 +10,8 @@ import (
 )
 
 var handles = map[string]func(*argparse.Opts){
-	"repl": repl.Handle,
-	"run":  run.Handle,
+	"repl": repl.Entry,
+	"run":  run.Entry,
 	"version": func(opts *argparse.Opts) {
 		help.Version(opts.Version)
 	},

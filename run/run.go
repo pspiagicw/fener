@@ -28,7 +28,7 @@ func parseRunArgs(opts *argparse.Opts) {
 	opts.Args = flag.Args()
 }
 
-func Handle(opts *argparse.Opts) {
+func Entry(opts *argparse.Opts) {
 
 	parseRunArgs(opts)
 

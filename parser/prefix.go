@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"fmt"
 	"strconv"
 
 	"github.com/pspiagicw/fener/ast"
@@ -36,8 +35,7 @@ func (p *Parser) parseInteger() ast.Expression {
 	num, err := strconv.ParseInt(value.Value, 10, 64)
 
 	if err != nil {
-		message := fmt.Sprintf("could not parse %q as integer", value.Value)
-		p.errors = append(p.errors, message)
+		p.addError("Could not parse %q as integer", value.Value)
 		return nil
 	}
 
@@ -77,7 +75,7 @@ func (p *Parser) parseGroupedExpression() ast.Expression {
 	if p.curTokenIs(token.RPAREN) {
 		p.advance()
 	} else {
-		p.errors = append(p.errors, "expected )")
+		p.addError("expected )")
 	}
 
 	return exp
@@ -163,8 +161,7 @@ func (p *Parser) parseFunctionParameters() []*ast.Identifier {
 	for _, exp := range expressions {
 		ident, ok := exp.(*ast.Identifier)
 		if !ok {
-			message := fmt.Sprintf("Expected identifier, got %v", exp.Name())
-			p.errors = append(p.errors, message)
+			p.addError("Expected identifier, got %v", exp.Name())
 			return nil
 		}
 		identifiers = append(identifiers, ident)

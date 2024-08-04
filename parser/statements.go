@@ -15,7 +15,7 @@ func (p *Parser) parseClassStatement() ast.Statement {
 	ident, ok := value.(*ast.Identifier)
 
 	if !ok {
-		p.errors = append(p.errors, "Expected identifier target for class statement")
+		p.addError("Expected identifier target for class statement, got %s", value.String())
 	}
 
 	stmt.Target = ident
@@ -41,14 +41,14 @@ func (p *Parser) parseTestStatement() *ast.TestStatement {
 	target := p.parseExpression(LOWEST)
 
 	if target == nil {
-		p.errors = append(p.errors, "Expected target for test statement")
+		p.addError("Expected target for test statement")
 		return nil
 	}
 
 	t, ok := target.(*ast.String)
 
 	if !ok {
-		p.errors = append(p.errors, "Expected string target for test statement")
+		p.addError("Expected string target for test statement, got %s", target.String())
 		return nil
 	}
 

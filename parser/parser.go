@@ -60,6 +60,10 @@ type Parser struct {
 	prefixParseFns map[token.TokenType]prefixParseFn
 }
 
+func (p *Parser) addError(message string, args ...interface{}) {
+	p.errors = append(p.errors, fmt.Sprintf(message, args...))
+}
+
 func (p *Parser) Errors() []string {
 	return p.errors
 }
@@ -101,6 +105,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerInfix(token.BITAND, p.parseInfixExpression)
 	p.registerInfix(token.BITOR, p.parseInfixExpression)
 	p.registerInfix(token.LSQUARE, p.parseIndexExpression)
+	p.registerInfix(token.DOT, p.parseFieldExpression)
 
 	p.advance()
 	p.advance()
@@ -182,6 +187,10 @@ func (p *Parser) parseExpression(precedence int) ast.Expression {
 		}
 
 		leftExp = infix(leftExp)
+
+		if leftExp == nil {
+			return nil
+		}
 	}
 
 	return leftExp
@@ -200,8 +209,7 @@ func (p *Parser) peekPrecedence() int {
 	return LOWEST
 }
 func (p *Parser) noPrefixParseFnError(t token.TokenType) {
-	msg := fmt.Sprintf("no prefix parse function for %s found", t)
-	p.errors = append(p.errors, msg)
+	p.addError("no prefix parse function for %s found", t)
 }
 func (p *Parser) curPrecedence() int {
 	if p, ok := precedences[p.curToken.Type]; ok {
@@ -216,6 +224,6 @@ func (p *Parser) expect(t token.TokenType) bool {
 		return true
 	}
 
-	p.errors = append(p.errors, fmt.Sprintf("expected %s, got %s", t, p.curToken.Type))
+	p.addError("expected %s, got %s", t, p.curToken.Type)
 	return false
 }

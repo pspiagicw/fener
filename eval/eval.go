@@ -26,9 +26,45 @@ func (e *Evaluator) Error(message string, args ...interface{}) {
 
 	e.ErrorHandler(err)
 }
+func (e *Evaluator) evalClassStatement(node *ast.ClassStatement, env *object.Environment) object.Object {
+	name := node.Target.Value
+	klass := &object.Class{
+		Name: name,
+	}
+	env.Set(name, klass)
+	return &object.Null{}
+}
+func (e *Evaluator) evalFieldExpression(node *ast.FieldExpression, env *object.Environment) object.Object {
+	target := e.Eval(node.Target, env)
+
+	if target.Type() != object.INSTANCE_OBJ {
+		e.Error("Can't access field on non-instance object %T", target)
+		return nil
+	}
+
+	instance, ok := target.(*object.Instance)
+
+	if !ok {
+		e.Error("Can't access field on non-instance object %T", target)
+		return nil
+	}
+
+	val, ok := instance.Get(node.Field.Value)
+
+	if !ok {
+		e.Error("Field not found: %s", node.Field.Value)
+		return nil
+	}
+
+	return val
+}
 
 func (e *Evaluator) Eval(node ast.Node, env *object.Environment) object.Object {
 	switch node := node.(type) {
+	case *ast.FieldExpression:
+		return e.evalFieldExpression(node, env)
+	case *ast.ClassStatement:
+		return e.evalClassStatement(node, env)
 	case *ast.WhileStatement:
 		return e.evalWhileStatement(node, env)
 	case *ast.TestStatement:
@@ -90,12 +126,37 @@ func (e *Evaluator) evalIdentifier(node *ast.Identifier, env *object.Environment
 
 	return value
 }
+func (e *Evaluator) assignField(node *ast.FieldExpression, value object.Object, env *object.Environment) object.Object {
+	target := e.Eval(node.Target, env)
+
+	if target.Type() != object.INSTANCE_OBJ {
+		e.Error("Can't assign field on non-instance object %T", target)
+		return nil
+	}
+
+	instance, ok := target.(*object.Instance)
+
+	if !ok {
+		e.Error("Can't assign field on non-instance object %T", target)
+		return nil
+	}
+
+	instance.Set(node.Field.Value, value)
+	return value
+}
 func (e *Evaluator) evalAssignmentExpression(node *ast.AssignmentExpression, env *object.Environment) object.Object {
 	value := e.Eval(node.Value, env)
 
-	env.Set(node.Target.Value, value)
-
-	return value
+	switch target := node.Target.(type) {
+	case *ast.Identifier:
+		env.Set(target.Value, value)
+		return value
+	case *ast.FieldExpression:
+		return e.assignField(target, value, env)
+	default:
+		e.Error("Can't assign to expression %T", node.Target)
+		return nil
+	}
 }
 func (e *Evaluator) evalBlockStatement(node *ast.BlockStatement, env *object.Environment) object.Object {
 	var result object.Object
@@ -350,6 +411,10 @@ func (e *Evaluator) evalArgs(args []ast.Expression, env *object.Environment) []o
 
 	return evaluated
 }
+func (e *Evaluator) evalClassCall(klass *object.Class, args []object.Object) object.Object {
+	instance := &object.Instance{Class: klass, Map: make(map[string]object.Object)}
+	return instance
+}
 func (e *Evaluator) evalCallExpression(node *ast.CallExpression, env *object.Environment) object.Object {
 	ex := e.Eval(node.Function, env)
 	args := e.evalArgs(node.Arguments, env)
@@ -359,6 +424,8 @@ func (e *Evaluator) evalCallExpression(node *ast.CallExpression, env *object.Env
 		return e.evalFunctionCall(ex, args)
 	case *object.Builtin:
 		return e.evalBuiltinCall(ex, args)
+	case *object.Class:
+		return e.evalClassCall(ex, args)
 	default:
 		e.Error("Can't call expression %T", ex)
 		return nil

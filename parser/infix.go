@@ -5,6 +5,22 @@ import (
 	"github.com/pspiagicw/fener/token"
 )
 
+func (p *Parser) parseFieldExpression(left ast.Expression) ast.Expression {
+	expression := &ast.FieldExpression{
+		Token:  p.curToken,
+		Target: left,
+	}
+
+	p.advance()
+
+	expression.Field = p.curToken
+
+	if !p.expect(token.IDENT) {
+		return nil
+	}
+
+	return expression
+}
 func (p *Parser) parseIndexExpression(left ast.Expression) ast.Expression {
 	expression := &ast.IndexExpression{
 		Token: p.curToken,
@@ -72,18 +88,20 @@ func (p *Parser) parseInfixExpression(left ast.Expression) ast.Expression {
 }
 func (p *Parser) parseAssignmentExpression(left ast.Expression) ast.Expression {
 
-	identifier, ok := left.(*ast.Identifier)
-
-	if !ok {
-		p.errors = append(p.errors, "Invalid assignment target")
+	switch left.(type) {
+	case *ast.Identifier:
+	case *ast.FieldExpression:
+	default:
+		p.addError("Invalid assignment target %T", left)
 		return nil
+
 	}
 
 	p.advance()
 
 	assignment := &ast.AssignmentExpression{
 		Token:  p.curToken,
-		Target: identifier,
+		Target: left,
 	}
 
 	assignment.Value = p.parseExpression(LOWEST)

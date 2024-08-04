@@ -18,6 +18,9 @@ const (
 	FUNCTION_OBJ = "FUNCTION"
 	BULITIN_OBJ  = "BUILTIN"
 	RETURN_OBJ   = "RETURN"
+
+	CLASS_OBJ    = "CLASS"
+	INSTANCE_OBJ = "INSTANCE"
 )
 
 type Object interface {
@@ -95,3 +98,27 @@ type Return struct {
 func (r *Return) Type() ObjectType { return RETURN_OBJ }
 func (r *Return) String() string   { return r.Value.String() }
 func (r *Return) Pretty() string   { return r.Value.Pretty() }
+
+type Class struct {
+	Name string
+}
+
+func (c *Class) Type() ObjectType { return CLASS_OBJ }
+func (c *Class) String() string   { return fmt.Sprintf("class %s", c.Name) }
+func (c *Class) Pretty() string   { return c.Name }
+
+type Instance struct {
+	Class *Class
+	Map   map[string]Object
+}
+
+func (i *Instance) Type() ObjectType { return INSTANCE_OBJ }
+func (i *Instance) String() string   { return fmt.Sprintf("instance of %s", i.Class.Name) }
+func (i *Instance) Pretty() string   { return i.String() }
+func (i *Instance) Set(key string, value Object) {
+	i.Map[key] = value
+}
+func (i *Instance) Get(key string) (Object, bool) {
+	value, ok := i.Map[key]
+	return value, ok
+}
