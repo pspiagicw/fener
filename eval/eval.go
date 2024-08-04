@@ -29,7 +29,14 @@ func (e *Evaluator) Error(message string, args ...interface{}) {
 func (e *Evaluator) evalClassStatement(node *ast.ClassStatement, env *object.Environment) object.Object {
 	name := node.Target.Value
 	klass := &object.Class{
-		Name: name,
+		Name:    name,
+		Methods: make(map[string]*object.Function),
+	}
+
+	for _, method := range node.Methods {
+		fn := e.evalFunctionLiteral(method, env)
+
+		klass.Methods[method.Target.Value] = fn
 	}
 	env.Set(name, klass)
 	return &object.Null{}
@@ -369,8 +376,7 @@ func getArgumentNames(args []*ast.Identifier) []string {
 
 	return names
 }
-func (e *Evaluator) evalFunctionStatement(node *ast.FunctionStatement, env *object.Environment) object.Object {
-
+func (e *Evaluator) evalFunctionLiteral(node *ast.FunctionStatement, env *object.Environment) *object.Function {
 	args := getArgumentNames(node.Arguments)
 
 	fn := &object.Function{
@@ -378,6 +384,13 @@ func (e *Evaluator) evalFunctionStatement(node *ast.FunctionStatement, env *obje
 		Body:      node.Body,
 		Env:       env,
 	}
+
+	return fn
+}
+func (e *Evaluator) evalFunctionStatement(node *ast.FunctionStatement, env *object.Environment) object.Object {
+
+	fn := e.evalFunctionLiteral(node, env)
+
 	name := node.Target.Value
 
 	env.Set(name, fn)
@@ -412,7 +425,7 @@ func (e *Evaluator) evalArgs(args []ast.Expression, env *object.Environment) []o
 	return evaluated
 }
 func (e *Evaluator) evalClassCall(klass *object.Class, args []object.Object) object.Object {
-	instance := &object.Instance{Class: klass, Map: make(map[string]object.Object)}
+	instance := &object.Instance{Class: klass, Map: make(map[string]object.Object), Methods: klass.Methods}
 	return instance
 }
 func (e *Evaluator) evalCallExpression(node *ast.CallExpression, env *object.Environment) object.Object {

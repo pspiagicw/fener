@@ -100,7 +100,8 @@ func (r *Return) String() string   { return r.Value.String() }
 func (r *Return) Pretty() string   { return r.Value.Pretty() }
 
 type Class struct {
-	Name string
+	Name    string
+	Methods map[string]*Function
 }
 
 func (c *Class) Type() ObjectType { return CLASS_OBJ }
@@ -108,8 +109,9 @@ func (c *Class) String() string   { return fmt.Sprintf("class %s", c.Name) }
 func (c *Class) Pretty() string   { return c.Name }
 
 type Instance struct {
-	Class *Class
-	Map   map[string]Object
+	Class   *Class
+	Map     map[string]Object
+	Methods map[string]*Function
 }
 
 func (i *Instance) Type() ObjectType { return INSTANCE_OBJ }
@@ -119,6 +121,10 @@ func (i *Instance) Set(key string, value Object) {
 	i.Map[key] = value
 }
 func (i *Instance) Get(key string) (Object, bool) {
-	value, ok := i.Map[key]
+	value, ok := i.Methods[key]
+	if !ok {
+		fn, ok := i.Map[key]
+		return fn, ok
+	}
 	return value, ok
 }
