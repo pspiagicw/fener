@@ -14,6 +14,27 @@ type testCase struct {
 	value interface{}
 }
 
+func TestField(t *testing.T) {
+	table := []testCase{
+		{
+			`class something
+                fn hello()
+                    this.surname = "Hello"
+                end
+                fn name()
+                    return this.surname
+                end
+            end
+            v = something()
+            v.hello()
+            v.name()
+            `,
+			"Hello",
+		},
+	}
+	runTableTests(t, table)
+}
+
 func TestMethod(t *testing.T) {
 	table := []testCase{
 		{

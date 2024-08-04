@@ -41,6 +41,11 @@ func (e *Evaluator) evalClassStatement(node *ast.ClassStatement, env *object.Env
 	env.Set(name, klass)
 	return &object.Null{}
 }
+func (e *Evaluator) bindMethod(method *object.Function, instance *object.Instance) *object.Function {
+	method.Env.Set("this", instance)
+
+	return method
+}
 func (e *Evaluator) evalFieldExpression(node *ast.FieldExpression, env *object.Environment) object.Object {
 	target := e.Eval(node.Target, env)
 
@@ -63,7 +68,12 @@ func (e *Evaluator) evalFieldExpression(node *ast.FieldExpression, env *object.E
 		return nil
 	}
 
-	return val
+	switch val := val.(type) {
+	case *object.Function:
+		return e.bindMethod(val, instance)
+	default:
+		return val
+	}
 }
 
 func (e *Evaluator) Eval(node ast.Node, env *object.Environment) object.Object {
