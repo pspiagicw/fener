@@ -6,8 +6,21 @@
 ;; Declare a setter or some other method for that
 
 
-class soemthing
+class something
+    fn init(name, surname)
+        this.name = name
+        this.surname = surname
+    end
     fn hello()
-        print("Hello, World")
+        print("Hello ", this.name)
+    end
+    fn setName(name)
+        this.name = name
     end
 end
+
+v = something("Chris", "Pratt")
+v.hello()
+v.setName("Trevor")
+v.hello()
+

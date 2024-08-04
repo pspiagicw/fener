@@ -435,7 +435,22 @@ func (e *Evaluator) evalArgs(args []ast.Expression, env *object.Environment) []o
 	return evaluated
 }
 func (e *Evaluator) evalClassCall(klass *object.Class, args []object.Object) object.Object {
-	instance := &object.Instance{Class: klass, Map: make(map[string]object.Object), Methods: klass.Methods}
+	instance := &object.Instance{
+		Class:   klass,
+		Map:     make(map[string]object.Object),
+		Methods: klass.Methods,
+	}
+
+	constructor, ok := klass.Methods["init"]
+
+	// If the class has an init method, call it
+	if ok {
+		newEnv := newEnclosedEnvironment(constructor.Env)
+		e.applyArguments(constructor.Arguments, args, newEnv)
+		e.bindMethod(constructor, instance)
+		e.Eval(constructor.Body, newEnv)
+	}
+
 	return instance
 }
 func (e *Evaluator) evalCallExpression(node *ast.CallExpression, env *object.Environment) object.Object {

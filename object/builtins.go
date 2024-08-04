@@ -14,8 +14,9 @@ func initBuiltins(env *Environment) {
 }
 func printFunc(args ...Object) (Object, error) {
 	for _, arg := range args {
-		fmt.Println(arg.Pretty())
+		fmt.Print(arg.Pretty())
 	}
+	fmt.Println()
 
 	return &Null{}, nil
 }
