@@ -6,12 +6,17 @@ version = "0.0.1"
 [task.build]
 description = "Build the project."
 command = "go build ."
+depends = [
+    "generate",
+    "format"
+]
 
 
 [task.test]
 command = "go test ./... -test.fullpath -timeout 1000ms"
 depends = [
-    "format"
+    "format",
+    "build"
 ]
 
 [task.format]
@@ -20,3 +25,7 @@ command = "go fmt ./..."
 [task.run]
 command = "./fener repl"
 depends = ["build"]
+
+[task.generate]
+command = "go generate ./..."
+description = "Generate stringer code."
