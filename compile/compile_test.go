@@ -9,6 +9,96 @@ import (
 	"github.com/pspiagicw/fener/parser"
 )
 
+// func TestLambda(t *testing.T) {
+// 	input := `fn something() end`
+//
+// 	constants := []interface{}{
+// 		[]*code.Instruction{},
+// 	}
+//
+// 	bytecode := []*code.Instruction{
+// 		code.Make(code.PUSH, 0), // Push 0
+// 		code.Make(code.SET, 0),  // Set something
+// 	}
+//
+// 	testBytecode(t, input, bytecode, constants)
+// }
+
+func TestWhile(t *testing.T) {
+	input := `while 2 < 3 then 10 end`
+
+	constants := []interface{}{2, 3, 10}
+
+	bytecode := []*code.Instruction{
+		code.Make(code.PUSH, 0),  // Push 2 0000
+		code.Make(code.PUSH, 1),  // Push 3 0003
+		code.Make(code.LT),       // Less than 0006
+		code.Make(code.JCMP, 16), // Jump if not true 0007
+		code.Make(code.PUSH, 2),  // Push 10 0010
+		code.Make(code.JMP, 0),   // Jump 0013
+	}
+
+	testBytecode(t, input, bytecode, constants)
+}
+
+func TestElif(t *testing.T) {
+	t.Skip()
+	input := `if 2 < 3 then 10 elif 3 < 4 then 20 else 30 end`
+
+	constants := []interface{}{2, 3, 10, 4, 20, 30}
+
+	bytecode := []*code.Instruction{
+		code.Make(code.PUSH, 0),  // Push 2 0000
+		code.Make(code.PUSH, 1),  // Push 3 0003
+		code.Make(code.LT),       // Less than 0006
+		code.Make(code.JCMP, 16), // Jump if not true 0007
+		code.Make(code.PUSH, 2),  // Push 10 0010
+		code.Make(code.JMP, 35),  // Jump 0013
+		code.Make(code.PUSH, 3),  // Push 3 0016
+		code.Make(code.PUSH, 4),  // Push 4 0019
+		code.Make(code.LT),       // Less than 0022
+		code.Make(code.JCMP, 32), // Jump if not true 0023
+		code.Make(code.PUSH, 5),  // Push 20 0026
+		code.Make(code.JMP, 35),  // Jump 0029
+		code.Make(code.PUSH, 6),  // Push 30 0032
+	}
+
+	testBytecode(t, input, bytecode, constants)
+}
+
+func TestIf(t *testing.T) {
+	input := `if 2 < 3 then 10 end`
+
+	constants := []interface{}{2, 3, 10}
+
+	bytecode := []*code.Instruction{
+		code.Make(code.PUSH, 0),  // Push 2 0000
+		code.Make(code.PUSH, 1),  // Push 3 0003
+		code.Make(code.LT),       // Less than 0006
+		code.Make(code.JCMP, 13), // Jump if not true 0007
+		code.Make(code.PUSH, 2),  // Push 10 0010
+	}
+	testBytecode(t, input, bytecode, constants)
+}
+
+func TestIfExpressions(t *testing.T) {
+	input := `if 2 < 3 then 10 else 20 end`
+
+	constants := []interface{}{2, 3, 10, 20}
+
+	bytecode := []*code.Instruction{
+		code.Make(code.PUSH, 0),  // Push 2 0000
+		code.Make(code.PUSH, 1),  // Push 3 0003
+		code.Make(code.LT),       // Less than 0006
+		code.Make(code.JCMP, 16), // Jump if not true 0007
+		code.Make(code.PUSH, 2),  // Push 10 0010
+		code.Make(code.JMP, 19),  // Jump 0013
+		code.Make(code.PUSH, 3),  // Push 20 0016
+	}
+
+	testBytecode(t, input, bytecode, constants)
+}
+
 func TestVariableReassignment(t *testing.T) {
 	input := `a = 5 a = 10`
 

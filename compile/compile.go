@@ -9,26 +9,42 @@ import (
 	"github.com/pspiagicw/fener/token"
 )
 
+type Scope struct {
+	instructions []*code.Instruction
+}
+
 type Compiler struct {
 	instructions []*code.Instruction
 	constants    []object.Object
+	scopeIdx     int
 
 	symbols *SymbolTable
 
-	constID int
+	jumpTable map[int]int
+	constID   int
 }
 
 func New() *Compiler {
+	// mainScope := &Scope{}
 	return &Compiler{
 		instructions: []*code.Instruction{},
 		constants:    []object.Object{},
 		constID:      0,
 
-		symbols: NewSymbolTable(),
+		jumpTable: make(map[int]int),
+		symbols:   NewSymbolTable(),
 	}
 }
+func (c *Compiler) Optimizer() {
+	c.JumpOptimizer()
+}
+
+// func (c *Compiler) currentScope() *Scope {
+// 	return c.scopes[c.scopeIdx]
+// }
 
 func (c *Compiler) Instructions() []*code.Instruction {
+	c.Optimizer()
 	return c.instructions
 }
 func (c *Compiler) Constants() []object.Object {
@@ -53,9 +69,120 @@ func (c *Compiler) Compile(node ast.Node) error {
 		return c.compileAssignmentExpression(node)
 	case *ast.Identifier:
 		return c.compileIdentifier(node)
+	case *ast.IfExpression:
+		return c.compileIfExpression(node)
+	case *ast.BlockStatement:
+		return c.compileBlockStatement(node)
+	case *ast.WhileStatement:
+		return c.compileWhileStatement(node)
+	// case *ast.FunctionStatement:
+	// 	return c.compileFunctionStatement(node)
 	default:
 		return fmt.Errorf("unknown node type %T", node)
 	}
+}
+
+//	func (c *Compiler) compileFunctionStatement(node *ast.FunctionStatement) error {
+//		symbol := c.symbols.Define(node.Target.Value)
+//		err := c.Compile(node.Body)
+//
+//		if err != nil {
+//			return err
+//		}
+//
+//		err = c.emit(code.SET, symbol.Index)
+//
+//		if err != nil {
+//			return err
+//		}
+//	}
+func (c *Compiler) compileWhileStatement(node *ast.WhileStatement) error {
+	condTarget := len(c.instructions)
+
+	err := c.Compile(node.Condition)
+	if err != nil {
+		return err
+	}
+
+	bodyId := len(c.instructions)
+	err = c.emit(code.JCMP, 99999) // placeholder
+
+	if err != nil {
+		return err
+	}
+
+	err = c.Compile(node.Consequence)
+	if err != nil {
+		return err
+	}
+
+	condId := len(c.instructions)
+	err = c.emit(code.JMP, 99999)
+	if err != nil {
+		return err
+	}
+
+	bodyTarget := len(c.instructions)
+
+	c.jumpTable[bodyId] = bodyTarget
+	c.jumpTable[condId] = condTarget
+
+	return nil
+}
+func (c *Compiler) compileBlockStatement(node *ast.BlockStatement) error {
+	for _, statement := range node.Statements {
+		err := c.Compile(statement)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+func (c *Compiler) compileIfExpression(node *ast.IfExpression) error {
+	err := c.Compile(node.Condition)
+
+	if err != nil {
+		return err
+	}
+	bodyId := len(c.instructions)
+	err = c.emit(code.JCMP, 99999) // placeholder
+
+	if err != nil {
+		return err
+	}
+
+	err = c.Compile(node.Consequence)
+
+	if err != nil {
+		return err
+	}
+
+	var elseId int
+	if node.Alternative != nil {
+		elseId = len(c.instructions)
+		err = c.emit(code.JMP, 99999) // placeholder
+
+		if err != nil {
+			return err
+		}
+	}
+
+	bodyTarget := len(c.instructions)
+
+	c.jumpTable[bodyId] = bodyTarget
+
+	if node.Alternative != nil {
+		err = c.Compile(node.Alternative)
+
+		if err != nil {
+			return err
+		}
+		elseTarget := len(c.instructions)
+
+		c.jumpTable[elseId] = elseTarget
+	}
+
+	return nil
 }
 func (c *Compiler) compileIdentifier(node *ast.Identifier) error {
 	sym, ok := c.symbols.Resolve(node.Value)

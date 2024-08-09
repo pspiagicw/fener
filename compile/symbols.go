@@ -1,15 +1,15 @@
 package compile
 
-type Scope string
+type SymbolScope string
 
 const (
-	GLOBAL Scope = "GLOBAL"
+	GLOBAL SymbolScope = "GLOBAL"
 )
 
 type Symbol struct {
 	Index int
 	Name  string
-	Scope Scope
+	Scope SymbolScope
 }
 
 type SymbolTable struct {

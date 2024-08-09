@@ -22,13 +22,16 @@ func _() {
 	_ = x[EQ-11]
 	_ = x[NOT-12]
 	_ = x[NEQ-13]
-	_ = x[SET-14]
-	_ = x[GET-15]
+	_ = x[JCMP-14]
+	_ = x[JMP-15]
+	_ = x[JT-16]
+	_ = x[SET-17]
+	_ = x[GET-18]
 }
 
-const _OpCode_name = "PUSHADDSUBDIVMULTRUEFALSEANDORGTLTEQNOTNEQSETGET"
+const _OpCode_name = "PUSHADDSUBDIVMULTRUEFALSEANDORGTLTEQNOTNEQJCMPJMPJTSETGET"
 
-var _OpCode_index = [...]uint8{0, 4, 7, 10, 13, 16, 20, 25, 28, 30, 32, 34, 36, 39, 42, 45, 48}
+var _OpCode_index = [...]uint8{0, 4, 7, 10, 13, 16, 20, 25, 28, 30, 32, 34, 36, 39, 42, 46, 49, 51, 54, 57}
 
 func (i OpCode) String() string {
 	if i >= OpCode(len(_OpCode_index)-1) {

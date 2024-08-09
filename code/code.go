@@ -23,6 +23,10 @@ const (
 	NOT
 	NEQ
 
+	JCMP
+	JMP
+	JT
+
 	SET
 	GET
 )
@@ -57,6 +61,9 @@ var definitions = map[OpCode]Definition{
 
 	SET: {SET, 1},
 	GET: {GET, 1},
+
+	JCMP: {JCMP, 1},
+	JMP:  {JMP, 1},
 }
 
 func Make(op OpCode, operands ...int) *Instruction {
