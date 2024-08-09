@@ -43,6 +43,11 @@ func (vm *VM) push(obj object.Object) error {
 	vm.stackPointer++
 	return nil
 }
+func (vm *VM) pop() object.Object {
+	obj := vm.stack[vm.stackPointer-1]
+	vm.stackPointer--
+	return obj
+}
 func (vm *VM) Run() error {
 	var err error
 	var ip int
@@ -61,13 +66,33 @@ func (vm *VM) Run() error {
 			vm.currentFrame().IP += 3
 
 			err = vm.push(constant)
+		case code.ADD:
+			right := vm.pop()
+			left := vm.pop()
 
+			result := vm.add(left, right)
+
+			if result != nil {
+				err = vm.push(result)
+			}
+
+			vm.currentFrame().IP++
 		default:
-			err = fmt.Errorf("unknown opcode %d", instr)
+			err = fmt.Errorf("unknown opcode %s", code.OpCode(instr))
 		}
 		if err != nil {
 			return err
 		}
+	}
+
+	return nil
+}
+func (vm *VM) add(left, right object.Object) object.Object {
+	if left.Type() == object.INTEGER_OBJ && right.Type() == object.INTEGER_OBJ {
+		leftVal := left.(*object.Integer).Value
+		rightVal := right.(*object.Integer).Value
+
+		return &object.Integer{Value: leftVal + rightVal}
 	}
 
 	return nil

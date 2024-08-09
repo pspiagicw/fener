@@ -19,6 +19,7 @@ func TestVM(t *testing.T) {
 
 	tt := []vmTest{
 		{"1", 1},
+		{"1 + 2", 3},
 	}
 
 	testVM(t, tt)
